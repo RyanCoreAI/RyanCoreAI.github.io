@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://yanxai.com/contact/index.html</loc>
+    <loc>https://yanxai.com/p/jm-01/</loc>
     
     <lastmod>2026-05-23</lastmod>
     
@@ -11,27 +11,27 @@
   </url>
   
   <url>
-    <loc>https://yanxai.com/2026/05/21/jian-miao-de-chan-pin-liu-cheng-yi-fen-jian-li-ru-he-cong-neng-xie-bian-cheng-neng-tou/</loc>
+    <loc>https://yanxai.com/p/jm-03/</loc>
     
-    <lastmod>2026-05-21</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://yanxai.com/2026/05/20/jian-miao-de-xu-qiu-fen-xi-si-lei-yong-hu-si-ge-chang-jing-si-ge-zhen-shi-tong-dian/</loc>
-    
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-05-23</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://yanxai.com/2026/05/19/wei-shi-me-wo-yao-zuo-jian-miao-yi-ge-bei-fu-fei-dan-chuang-qi-chu-lai-de-xiang-mu/</loc>
+    <loc>https://yanxai.com/p/jm-02/</loc>
     
-    <lastmod>2026-05-19</lastmod>
+    <lastmod>2026-05-23</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://yanxai.com/contact/index.html</loc>
+    
+    <lastmod>2026-05-23</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -228,6 +228,13 @@
   </url>
   
   <url>
+    <loc>https://yanxai.com/tags/%E9%9A%8F%E7%AC%94/</loc>
+    <lastmod>2026-05-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://yanxai.com/tags/%E7%AE%80%E5%96%B5/</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
@@ -250,13 +257,6 @@
   
   <url>
     <loc>https://yanxai.com/tags/Vue3/</loc>
-    <lastmod>2026-05-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://yanxai.com/tags/%E9%9A%8F%E7%AC%94/</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -300,14 +300,14 @@
   </url>
   
   <url>
-    <loc>https://yanxai.com/categories/%E9%A1%B9%E7%9B%AE/</loc>
+    <loc>https://yanxai.com/categories/%E7%94%9F%E6%B4%BB/</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://yanxai.com/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <loc>https://yanxai.com/categories/%E9%A1%B9%E7%9B%AE/</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

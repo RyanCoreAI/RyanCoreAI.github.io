@@ -9,24 +9,16 @@
     <atom:link href="https://yanxai.com/rss.xml" rel="self" type="application/rss+xml"/>
     
     <description>AI应用开发/Java后端/项目实战</description>
-    <pubDate>Thu, 21 May 2026 10:54:15 GMT</pubDate>
+    <pubDate>Sat, 23 May 2026 12:39:48 GMT</pubDate>
     <generator>http://hexo.io/</generator>
     
     <item>
-      <title>3.简喵的产品流程：一份简历如何从&quot;能写&quot;变成&quot;能投&quot;</title>
-      <link>https://yanxai.com/2026/05/21/jian-miao-de-chan-pin-liu-cheng-yi-fen-jian-li-ru-he-cong-neng-xie-bian-cheng-neng-tou/</link>
-      <guid>https://yanxai.com/2026/05/21/jian-miao-de-chan-pin-liu-cheng-yi-fen-jian-li-ru-he-cong-neng-xie-bian-cheng-neng-tou/</guid>
+      <title>简喵 03：产品流程——一份简历如何从&quot;能写&quot;变成&quot;能投&quot;</title>
+      <link>https://yanxai.com/p/jm-03/</link>
+      <guid>https://yanxai.com/p/jm-03/</guid>
       <pubDate>Thu, 21 May 2026 14:00:00 GMT</pubDate>
       
-        
-        
-      <description>&lt;blockquote&gt;
-&lt;p&gt;功能可以少，但路径必须清楚。功能多但路径乱，用户只会在页面里迷路。功能少但路径顺，用户至少能走到最后一步。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;我设想过一个最典型的使用场景。&lt;/p&gt;
-&lt;p&gt;晚上 10 点 40，用户刷到一个后端开发实习 JD，投递截止写着今晚 12 点。&lt;/p&gt;
-&lt;p&gt;他手里有一份简历。问题不是这份简历完全不能用，而是他不知道它现在能不能投。</description>
-        
+      <description>简喵的产品流程不是把功能按顺序排起来，而是回答用户从打开工具到导出一份敢投的简历，中间每一步应该做什么、系统在背后处理什么、AI的建议如何被理解、遇到问题时怎么继续。</description>
       
       
       
@@ -51,27 +43,17 @@
       <category domain="https://yanxai.com/tags/%E4%BA%A7%E5%93%81%E6%B5%81%E7%A8%8B/">产品流程</category>
       
       
-      <comments>https://yanxai.com/2026/05/21/jian-miao-de-chan-pin-liu-cheng-yi-fen-jian-li-ru-he-cong-neng-xie-bian-cheng-neng-tou/#disqus_thread</comments>
+      <comments>https://yanxai.com/p/jm-03/#disqus_thread</comments>
       
     </item>
     
     <item>
-      <title>2.简喵的需求分析——四类用户、四个场景、四个真实痛点</title>
-      <link>https://yanxai.com/2026/05/20/jian-miao-de-xu-qiu-fen-xi-si-lei-yong-hu-si-ge-chang-jing-si-ge-zhen-shi-tong-dian/</link>
-      <guid>https://yanxai.com/2026/05/20/jian-miao-de-xu-qiu-fen-xi-si-lei-yong-hu-si-ge-chang-jing-si-ge-zhen-shi-tong-dian/</guid>
+      <title>简喵 02：需求分析——四类用户、四个场景、四个真实痛点</title>
+      <link>https://yanxai.com/p/jm-02/</link>
+      <guid>https://yanxai.com/p/jm-02/</guid>
       <pubDate>Wed, 20 May 2026 14:00:00 GMT</pubDate>
       
-        
-        
-      <description>&lt;blockquote&gt;
-&lt;p&gt;一个 AI 简历工具不应该从”我想做什么功能”开始，而应该从”用户到底卡在哪里”开始。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;写完上一篇《为什么我要做简喵：一个被付费弹窗气出来的项目》之后，有人问我：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;你做这个简历工具之前，到底有没有做过调研？还是拍脑袋就开始写代码？&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;这个问题很现</description>
-        
+      <description>简喵第一版不做大而全求职平台，而是聚焦学生和求职者针对具体 JD 优化简历的真实路径——四类用户、四个场景、四个痛点，以及基于 MoSCoW 的 V1.0 功能取舍。</description>
       
       
       
@@ -96,21 +78,17 @@
       <category domain="https://yanxai.com/tags/%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90/">需求分析</category>
       
       
-      <comments>https://yanxai.com/2026/05/20/jian-miao-de-xu-qiu-fen-xi-si-lei-yong-hu-si-ge-chang-jing-si-ge-zhen-shi-tong-dian/#disqus_thread</comments>
+      <comments>https://yanxai.com/p/jm-02/#disqus_thread</comments>
       
     </item>
     
     <item>
-      <title>1.为什么我要做简喵：一个被付费弹窗气出来的项目</title>
-      <link>https://yanxai.com/2026/05/19/wei-shi-me-wo-yao-zuo-jian-miao-yi-ge-bei-fu-fei-dan-chuang-qi-chu-lai-de-xiang-mu/</link>
-      <guid>https://yanxai.com/2026/05/19/wei-shi-me-wo-yao-zuo-jian-miao-yi-ge-bei-fu-fei-dan-chuang-qi-chu-lai-de-xiang-mu/</guid>
+      <title>简喵 01：为什么我要做简喵</title>
+      <link>https://yanxai.com/p/jm-01/</link>
+      <guid>https://yanxai.com/p/jm-01/</guid>
       <pubDate>Tue, 19 May 2026 15:00:00 GMT</pubDate>
       
-        
-        
-      <description>&lt;h2 id=&quot;项目预览&quot;&gt;&lt;a href=&quot;#项目预览&quot; class=&quot;headerlink&quot; title=&quot;项目预览&quot;&gt;&lt;/a&gt;项目预览&lt;/h2&gt;&lt;p&gt;下面是简喵当前开发版本的部分界面。功能和样式还会继续迭代，但核心方向已经确定：让用户不只是”做出一份好看的简历”，而是写出一份更清楚、更专业、更适合投递的简历。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&quot;lazy&quot; decoding=&quot;asyn</description>
-        
+      <description>被简历工具的付费导出弹窗气到之后，我决定做一个真正免费的 AI 简历优化工具。这篇文章记录简喵的起点——为什么做、解决什么问题、以及这个系列会写什么。</description>
       
       
       
@@ -137,7 +115,7 @@
       <category domain="https://yanxai.com/tags/Vue3/">Vue3</category>
       
       
-      <comments>https://yanxai.com/2026/05/19/wei-shi-me-wo-yao-zuo-jian-miao-yi-ge-bei-fu-fei-dan-chuang-qi-chu-lai-de-xiang-mu/#disqus_thread</comments>
+      <comments>https://yanxai.com/p/jm-01/#disqus_thread</comments>
       
     </item>
     
