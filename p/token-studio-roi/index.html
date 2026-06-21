@@ -11,12 +11,13 @@
 产出状态：已完成
 产出：commit / PR / 文档
 价值：中 / 高
-证据来源：自动高置信或人工确认</code></pre><p>只有走到这一步，<code>/review</code> 才能继续判断：哪些 token 有产出，哪些高成本 session 还没归因，哪些模型策略值得调整。</p><h3 id="2-4-ROI-Advisor：不给玄学建议，只给可解释规则"><a href="#2-4-ROI-Advisor：不给玄学建议，只给可解释规则" class="headerlink" title="2.4 ROI Advisor：不给玄学建议，只给可解释规则"></a>2.4 ROI Advisor：不给玄学建议，只给可解释规则</h3><p>Token Studio 不调用 LLM 生成建议。原因很简单：这个工具本身就是为了帮我少花 token，不应该为了分析 token 再消耗一轮 token。</p><p>它用本地规则做判断：</p><ul><li>高成本未归因 session：先补证据。</li><li>测试验证、探索、上下文整理使用重模型：建议切到轻量模型。</li><li>低价值或废弃任务使用高成本模型：建议先轻量试错。</li><li>高 input / low output：建议压缩上下文。</li><li>cache 复用低且 input 高：建议沉淀项目上下文。</li><li>未定价模型：不参与美元节省判断。</li></ul><p>Savings Simulator 也不声称真实节省金额，只做官方价换算下的策略模拟。</p><h3 id="2-5-Desktop-Pulse：给实时状态一个轻量入口"><a href="#2-5-Desktop-Pulse：给实时状态一个轻量入口" class="headerlink" title="2.5 Desktop Pulse：给实时状态一个轻量入口"></a>2.5 Desktop Pulse：给实时状态一个轻量入口</h3><p>浏览器里的 Dashboard、Trust、Review 是完整复盘入口。Desktop Pulse 只是伴侣。</p><p>它解决的是另一个问题：我不想一直开着浏览器 tab，但想随时知道今天 token 有没有失控。</p><p>所以 Pulse 重点展示近 24 小时 token、官方价换算、请求数、输入/输出/cache、模型消耗、来源分布、预算 guardrail 和当前建议。它只读本地 API / SQLite 聚合数据，不上传，也不重新实现采集。</p><h2 id="3-下载和使用全流程"><a href="#3-下载和使用全流程" class="headerlink" title="3. 下载和使用全流程"></a>3. 下载和使用全流程</h2><p>这里给 Windows 用户一段可直接复制运行的完整命令：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">nvm install 24.17.0
+证据来源：自动高置信或人工确认</code></pre><p>只有走到这一步，<code>/review</code> 才能继续判断：哪些 token 有产出，哪些高成本 session 还没归因，哪些模型策略值得调整。</p><h3 id="2-4-ROI-Advisor：不给玄学建议，只给可解释规则"><a href="#2-4-ROI-Advisor：不给玄学建议，只给可解释规则" class="headerlink" title="2.4 ROI Advisor：不给玄学建议，只给可解释规则"></a>2.4 ROI Advisor：不给玄学建议，只给可解释规则</h3><p>Token Studio 不调用 LLM 生成建议。原因很简单：这个工具本身就是为了帮我少花 token，不应该为了分析 token 再消耗一轮 token。</p><p>它用本地规则做判断：</p><ul><li>高成本未归因 session：先补证据。</li><li>测试验证、探索、上下文整理使用重模型：建议切到轻量模型。</li><li>低价值或废弃任务使用高成本模型：建议先轻量试错。</li><li>高 input / low output：建议压缩上下文。</li><li>cache 复用低且 input 高：建议沉淀项目上下文。</li><li>未定价模型：不参与美元节省判断。</li></ul><p>Savings Simulator 也不声称真实节省金额，只做官方价换算下的策略模拟。</p><h3 id="2-5-Desktop-Pulse：给实时状态一个轻量入口"><a href="#2-5-Desktop-Pulse：给实时状态一个轻量入口" class="headerlink" title="2.5 Desktop Pulse：给实时状态一个轻量入口"></a>2.5 Desktop Pulse：给实时状态一个轻量入口</h3><p>浏览器里的 Dashboard、Trust、Review 是完整复盘入口。Desktop Pulse 只是伴侣。</p><p>它解决的是另一个问题：我不想一直开着浏览器 tab，但想随时知道今天 token 有没有失控。</p><p>所以 Pulse 重点展示近 24 小时 token、官方价换算、请求数、输入/输出/cache、模型消耗、来源分布、预算 guardrail 和当前建议。它只读本地 API / SQLite 聚合数据，不上传，也不重新实现采集。</p><h2 id="3-下载和使用全流程"><a href="#3-下载和使用全流程" class="headerlink" title="3. 下载和使用全流程"></a>3. 下载和使用全流程</h2><p>这里给 Windows 用户一段可直接复制运行的完整命令：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext"># 前提：已安装 nvm-windows
+nvm install 24.17.0
 nvm use 24.17.0
 node -v
 npm -v
-mkdir D:\TokenStudio
-cd D:\TokenStudio
+New-Item -ItemType Directory -Force D:\TokenStudio | Out-Null
+Set-Location D:\TokenStudio
 $pkg = 'token-studio' + '@' + '6.0.8'
 npx -y $pkg</code></pre><p>如果已经有 Node 24，也可以只运行最后三行。它做的是完整本地真实模式，不是 demo：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">1. npx 从 npm 下载并运行 token-studio
 2. Token Studio 做只读 coverage，检查本机是否有 Claude Code / Codex CLI 结构化 token 日志
