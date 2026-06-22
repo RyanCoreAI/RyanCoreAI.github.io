@@ -32,8 +32,10 @@ npm -v
 mkdir D:\TokenStudio
 cd /d D:\TokenStudio
 
-set pkg=token-studio@6.0.8
-npx -y %pkg%</code></pre><p>如果已经有 Node 24，也可以只运行最后三行。它做的是完整本地真实模式，不是 demo：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">1. npx 从 npm 下载并运行 token-studio
+set "pkg=token-studio"
+set "at=@"
+set "ver=6.0.8"
+npx -y %pkg%%at%%ver%</code></pre><p>如果已经有 Node 24，也可以只运行最后三行。它做的是完整本地真实模式，不是 demo：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">1. npx 从 npm 下载并运行 token-studio
 2. Token Studio 做只读 coverage，检查本机是否有 Claude Code / Codex CLI 结构化 token 日志
 3. 通过可信 gate 后，把 event 级 token 元数据写入本地 SQLite
 4. 启动 127.0.0.1 上的本地 Web/API 服务
