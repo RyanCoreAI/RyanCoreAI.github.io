@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="A practical guide to building production RAG systems with Spring AI — hybrid retrieval, reranking, chunking strategies, and evaluation pipelines. Based on real-world experience achieving 93% Recall@3.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Building a Production RAG System with Spring AI">
+<meta property="og:url" content="https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/index.html">
+<meta property="og:site_name" content="Ryan Guo">
+<meta property="og:description" content="A practical guide to building production RAG systems with Spring AI — hybrid retrieval, reranking, chunking strategies, and evaluation pipelines. Based on real-world experience achieving 93% Recall@3.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-05-10T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-11T03:40:03.835Z">
+<meta property="article:author" content="Ryan Guo">
+<meta property="article:tag" content="Spring AI">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="PGVector">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Embedding">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:creator" content="@ryan_core_ai">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/d415e2b907b87e97c57cad7de9135e71?s=48">
+          
+        
+      
+      
+        
+          
+            <link rel="icon" type="image/png" href="https://www.gravatar.com/avatar/d415e2b907b87e97c57cad7de9135e71?s=192" sizes="192x192">
+          
+        
+      
+      
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="https://www.gravatar.com/avatar/d415e2b907b87e97c57cad7de9135e71?s=180">
+          
+        
+      
+    
+    <!-- title -->
+    <title>Building a Production RAG System with Spring AI</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/portfolio/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/portfolio/true" title="Ryan Guo" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/portfolio/">Home</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/projects/">Projects</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/resume/">resume</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/blog/archives/">blog</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/contact/">contact</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&text=Building a Production RAG System with Spring AI"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&is_video=false&description=Building a Production RAG System with Spring AI"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Building a Production RAG System with Spring AI&body=Check out this article: https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&name=Building a Production RAG System with Spring AI&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&t=Building a Production RAG System with Spring AI"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Why-RAG-Matters"><span class="toc-number">1.</span> <span class="toc-text">Why RAG Matters</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Architecture-Overview"><span class="toc-number">2.</span> <span class="toc-text">Architecture Overview</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Key-Design-Decisions"><span class="toc-number">3.</span> <span class="toc-text">Key Design Decisions</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Document-Parsing-Is-Harder-Than-You-Think"><span class="toc-number">3.1.</span> <span class="toc-text">1. Document Parsing Is Harder Than You Think</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Chunking-Strategy-Makes-or-Breaks-Recall"><span class="toc-number">3.2.</span> <span class="toc-text">2. Chunking Strategy Makes or Breaks Recall</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Hybrid-Retrieval-Beats-Pure-Vector-Search"><span class="toc-number">3.3.</span> <span class="toc-text">3. Hybrid Retrieval Beats Pure Vector Search</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Don%E2%80%99t-Skip-the-Reranker"><span class="toc-number">3.4.</span> <span class="toc-text">4. Don’t Skip the Reranker</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-Always-Build-an-Eval-Set"><span class="toc-number">3.5.</span> <span class="toc-text">5. Always Build an Eval Set</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Code-Minimal-Spring-AI-RAG-Example"><span class="toc-number">4.</span> <span class="toc-text">Code: Minimal Spring AI RAG Example</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#What%E2%80%99s-Next"><span class="toc-number">5.</span> <span class="toc-text">What’s Next</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Building a Production RAG System with Spring AI
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Ryan Guo</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-05-10T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-05-10</time>
+        
+        (Updated: <time datetime="2026-05-11T03:40:03.835Z" class="dt-updated" itemprop="dateModified">2026-05-11</time>)
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/portfolio/blog/categories/ai-engineering/">AI Engineering</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/portfolio/tags/embedding/" rel="tag">Embedding</a>, <a class="p-category" href="/portfolio/tags/java/" rel="tag">Java</a>, <a class="p-category" href="/portfolio/tags/llm/" rel="tag">LLM</a>, <a class="p-category" href="/portfolio/tags/pgvector/" rel="tag">PGVector</a>, <a class="p-category" href="/portfolio/tags/rag/" rel="tag">RAG</a>, <a class="p-category" href="/portfolio/tags/spring-ai/" rel="tag">Spring AI</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="Why-RAG-Matters"><a href="#Why-RAG-Matters" class="headerlink" title="Why RAG Matters"></a>Why RAG Matters</h2><p>Retrieval-Augmented Generation (RAG) is the backbone of most practical LLM applications. Instead of fine-tuning models (expensive, slow), RAG gives the LLM access to your data at query time.</p>
+<p>After building RAG systems for production use, here’s what I’ve learned.</p>
+<h2 id="Architecture-Overview"><a href="#Architecture-Overview" class="headerlink" title="Architecture Overview"></a>Architecture Overview</h2><p>A production RAG pipeline has more moving parts than most tutorials show:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Document → Parse → Chunk → Embed → Store (Vector DB)</span><br><span class="line">                                          ↓</span><br><span class="line">Query → Rewrite → Embed → Retrieve → Rerank → Generate → Verify</span><br></pre></td></tr></table></figure>
+
+<h2 id="Key-Design-Decisions"><a href="#Key-Design-Decisions" class="headerlink" title="Key Design Decisions"></a>Key Design Decisions</h2><h3 id="1-Document-Parsing-Is-Harder-Than-You-Think"><a href="#1-Document-Parsing-Is-Harder-Than-You-Think" class="headerlink" title="1. Document Parsing Is Harder Than You Think"></a>1. Document Parsing Is Harder Than You Think</h3><p>PDFs with tables, scanned documents, mixed languages — these break naive parsers. I use a combination of:</p>
+<ul>
+<li><strong>Unstructured.io</strong> for general parsing</li>
+<li><strong>Camelot</strong> for table extraction</li>
+<li>Language detection for routing to appropriate embedding models</li>
+</ul>
+<h3 id="2-Chunking-Strategy-Makes-or-Breaks-Recall"><a href="#2-Chunking-Strategy-Makes-or-Breaks-Recall" class="headerlink" title="2. Chunking Strategy Makes or Breaks Recall"></a>2. Chunking Strategy Makes or Breaks Recall</h3><p>Fixed-size chunks are the default but rarely optimal. What works better:</p>
+<ul>
+<li><strong>Recursive character splitting</strong> with overlap</li>
+<li><strong>Semantic chunking</strong> at section boundaries</li>
+<li><strong>Small-to-big retrieval</strong> — retrieve small chunks, feed larger context to LLM</li>
+</ul>
+<h3 id="3-Hybrid-Retrieval-Beats-Pure-Vector-Search"><a href="#3-Hybrid-Retrieval-Beats-Pure-Vector-Search" class="headerlink" title="3. Hybrid Retrieval Beats Pure Vector Search"></a>3. Hybrid Retrieval Beats Pure Vector Search</h3><p>Pure vector search misses exact keyword matches. My go-to setup:</p>
+<ul>
+<li><strong>Dense retrieval</strong>: HNSW vector index (PGVector)</li>
+<li><strong>Sparse retrieval</strong>: BM25 (full-text search)</li>
+<li><strong>Fusion</strong>: Reciprocal Rank Fusion (RRF)</li>
+<li><strong>Rerank</strong>: Cross-Encoder (BGE-Reranker)</li>
+</ul>
+<p>This combination improved Recall@3 from 78% to 93% in my benchmarks.</p>
+<h3 id="4-Don’t-Skip-the-Reranker"><a href="#4-Don’t-Skip-the-Reranker" class="headerlink" title="4. Don’t Skip the Reranker"></a>4. Don’t Skip the Reranker</h3><p>A good reranker can recover relevant documents that the retriever missed. The cost is minimal (~100ms per query for top-20 candidates) but the quality improvement is significant.</p>
+<h3 id="5-Always-Build-an-Eval-Set"><a href="#5-Always-Build-an-Eval-Set" class="headerlink" title="5. Always Build an Eval Set"></a>5. Always Build an Eval Set</h3><p>You can’t improve what you can’t measure. My evaluation pipeline includes:</p>
+<ul>
+<li><strong>200 intent classification samples</strong> (multilingual)</li>
+<li><strong>100 RAG QA pairs</strong> with ground-truth answers</li>
+<li>Metrics: Precision, Recall, F1, MRR, Faithfulness</li>
+<li>Automated regression testing on every deploy</li>
+</ul>
+<h2 id="Code-Minimal-Spring-AI-RAG-Example"><a href="#Code-Minimal-Spring-AI-RAG-Example" class="headerlink" title="Code: Minimal Spring AI RAG Example"></a>Code: Minimal Spring AI RAG Example</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RagConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    VectorStore <span class="title function_">vectorStore</span><span class="params">(JdbcTemplate jdbcTemplate,</span></span><br><span class="line"><span class="params">                            EmbeddingModel embeddingModel)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">PgVectorStore</span>(jdbcTemplate, embeddingModel);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    ChatClient <span class="title function_">chatClient</span><span class="params">(ChatModel chatModel,</span></span><br><span class="line"><span class="params">                          VectorStore vectorStore)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> ChatClient.builder(chatModel)</span><br><span class="line">            .defaultAdvisors(<span class="keyword">new</span> <span class="title class_">QuestionAnswerAdvisor</span>(vectorStore))</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Then use it anywhere:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ChatController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatClient chatClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/chat&quot;)</span></span><br><span class="line">    String <span class="title function_">chat</span><span class="params">(<span class="meta">@RequestBody</span> String question)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .user(question)</span><br><span class="line">            .call()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="What’s-Next"><a href="#What’s-Next" class="headerlink" title="What’s Next"></a>What’s Next</h2><p>I’m currently exploring <strong>Agentic RAG</strong> — where the LLM decides whether to search, what to search for, and how many retrieval rounds to run. This is especially useful for complex multi-hop questions.</p>
+<hr>
+<p><em>Follow me on <a target="_blank" rel="noopener" href="https://github.com/RyanCoreAI">GitHub</a> for more production AI engineering content.</em></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/portfolio/">Home</a></li>
+        
+          <li><a href="/portfolio/about/">About</a></li>
+        
+          <li><a href="/portfolio/projects/">Projects</a></li>
+        
+          <li><a href="/portfolio/resume/">resume</a></li>
+        
+          <li><a href="/portfolio/blog/archives/">blog</a></li>
+        
+          <li><a href="/portfolio/contact/">contact</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Why-RAG-Matters"><span class="toc-number">1.</span> <span class="toc-text">Why RAG Matters</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Architecture-Overview"><span class="toc-number">2.</span> <span class="toc-text">Architecture Overview</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Key-Design-Decisions"><span class="toc-number">3.</span> <span class="toc-text">Key Design Decisions</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Document-Parsing-Is-Harder-Than-You-Think"><span class="toc-number">3.1.</span> <span class="toc-text">1. Document Parsing Is Harder Than You Think</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Chunking-Strategy-Makes-or-Breaks-Recall"><span class="toc-number">3.2.</span> <span class="toc-text">2. Chunking Strategy Makes or Breaks Recall</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Hybrid-Retrieval-Beats-Pure-Vector-Search"><span class="toc-number">3.3.</span> <span class="toc-text">3. Hybrid Retrieval Beats Pure Vector Search</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Don%E2%80%99t-Skip-the-Reranker"><span class="toc-number">3.4.</span> <span class="toc-text">4. Don’t Skip the Reranker</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-Always-Build-an-Eval-Set"><span class="toc-number">3.5.</span> <span class="toc-text">5. Always Build an Eval Set</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Code-Minimal-Spring-AI-RAG-Example"><span class="toc-number">4.</span> <span class="toc-text">Code: Minimal Spring AI RAG Example</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#What%E2%80%99s-Next"><span class="toc-number">5.</span> <span class="toc-text">What’s Next</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&text=Building a Production RAG System with Spring AI"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&is_video=false&description=Building a Production RAG System with Spring AI"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Building a Production RAG System with Spring AI&body=Check out this article: https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&title=Building a Production RAG System with Spring AI"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&name=Building a Production RAG System with Spring AI&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/&t=Building a Production RAG System with Spring AI"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2025-2026
+    Ryan Guo
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/portfolio/">Home</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/projects/">Projects</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/resume/">resume</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/blog/archives/">blog</a></li><!--
+     --><!--
+       --><li><a href="/portfolio/contact/">contact</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/portfolio/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/portfolio/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+
+  
+<script src="/portfolio/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+  
+    
+<script src="/portfolio/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/portfolio/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'RyanCoreAI/ryancoreai.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'comment';
+      var utterances_theme = 'preferred-color-scheme';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

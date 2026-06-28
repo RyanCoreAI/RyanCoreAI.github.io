@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Ryan Guo</title>
+  
+  <subtitle>Building AI products from zero to production</subtitle>
+  <link href="https://ryancoreai.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://ryancoreai.github.io/"/>
+  <updated>2026-05-11T03:40:03.835Z</updated>
+  <id>https://ryancoreai.github.io/</id>
+  
+  <author>
+    <name>Ryan Guo</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Building a Production RAG System with Spring AI</title>
+    <link href="https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/"/>
+    <id>https://ryancoreai.github.io/blog/2026/05/10/building-rag-system-spring-ai/</id>
+    <published>2026-05-10T04:00:00.000Z</published>
+    <updated>2026-05-11T03:40:03.835Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Why-RAG-Matters"><a href="#Why-RAG-Matters" class="headerlink" title="Why RAG Matters"></a>Why RAG Matters</h2><p>Retrieval-Augmented Generation (RAG) is the backbone of most practical LLM applications. Instead of fine-tuning models (expensive, slow), RAG gives the LLM access to your data at query time.</p><p>After building RAG systems for production use, here’s what I’ve learned.</p><h2 id="Architecture-Overview"><a href="#Architecture-Overview" class="headerlink" title="Architecture Overview"></a>Architecture Overview</h2><p>A production RAG pipeline has more moving parts than most tutorials show:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Document → Parse → Chunk → Embed → Store (Vector DB)</span><br><span class="line">                                          ↓</span><br><span class="line">Query → Rewrite → Embed → Retrieve → Rerank → Generate → Verify</span><br></pre></td></tr></table></figure><h2 id="Key-Design-Decisions"><a href="#Key-Design-Decisions" class="headerlink" title="Key Design Decisions"></a>Key Design Decisions</h2><h3 id="1-Document-Parsing-Is-Harder-Than-You-Think"><a href="#1-Document-Parsing-Is-Harder-Than-You-Think" class="headerlink" title="1. Document Parsing Is Harder Than You Think"></a>1. Document Parsing Is Harder Than You Think</h3><p>PDFs with tables, scanned documents, mixed languages — these break naive parsers. I use a combination of:</p><ul><li><strong>Unstructured.io</strong> for general parsing</li><li><strong>Camelot</strong> for table extraction</li><li>Language detection for routing to appropriate embedding models</li></ul><h3 id="2-Chunking-Strategy-Makes-or-Breaks-Recall"><a href="#2-Chunking-Strategy-Makes-or-Breaks-Recall" class="headerlink" title="2. Chunking Strategy Makes or Breaks Recall"></a>2. Chunking Strategy Makes or Breaks Recall</h3><p>Fixed-size chunks are the default but rarely optimal. What works better:</p><ul><li><strong>Recursive character splitting</strong> with overlap</li><li><strong>Semantic chunking</strong> at section boundaries</li><li><strong>Small-to-big retrieval</strong> — retrieve small chunks, feed larger context to LLM</li></ul><h3 id="3-Hybrid-Retrieval-Beats-Pure-Vector-Search"><a href="#3-Hybrid-Retrieval-Beats-Pure-Vector-Search" class="headerlink" title="3. Hybrid Retrieval Beats Pure Vector Search"></a>3. Hybrid Retrieval Beats Pure Vector Search</h3><p>Pure vector search misses exact keyword matches. My go-to setup:</p><ul><li><strong>Dense retrieval</strong>: HNSW vector index (PGVector)</li><li><strong>Sparse retrieval</strong>: BM25 (full-text search)</li><li><strong>Fusion</strong>: Reciprocal Rank Fusion (RRF)</li><li><strong>Rerank</strong>: Cross-Encoder (BGE-Reranker)</li></ul><p>This combination improved Recall@3 from 78% to 93% in my benchmarks.</p><h3 id="4-Don’t-Skip-the-Reranker"><a href="#4-Don’t-Skip-the-Reranker" class="headerlink" title="4. Don’t Skip the Reranker"></a>4. Don’t Skip the Reranker</h3><p>A good reranker can recover relevant documents that the retriever missed. The cost is minimal (~100ms per query for top-20 candidates) but the quality improvement is significant.</p><h3 id="5-Always-Build-an-Eval-Set"><a href="#5-Always-Build-an-Eval-Set" class="headerlink" title="5. Always Build an Eval Set"></a>5. Always Build an Eval Set</h3><p>You can’t improve what you can’t measure. My evaluation pipeline includes:</p><ul><li><strong>200 intent classification samples</strong> (multilingual)</li><li><strong>100 RAG QA pairs</strong> with ground-truth answers</li><li>Metrics: Precision, Recall, F1, MRR, Faithfulness</li><li>Automated regression testing on every deploy</li></ul><h2 id="Code-Minimal-Spring-AI-RAG-Example"><a href="#Code-Minimal-Spring-AI-RAG-Example" class="headerlink" title="Code: Minimal Spring AI RAG Example"></a>Code: Minimal Spring AI RAG Example</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RagConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    VectorStore <span class="title function_">vectorStore</span><span class="params">(JdbcTemplate jdbcTemplate,</span></span><br><span class="line"><span class="params">                            EmbeddingModel embeddingModel)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">PgVectorStore</span>(jdbcTemplate, embeddingModel);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    ChatClient <span class="title function_">chatClient</span><span class="params">(ChatModel chatModel,</span></span><br><span class="line"><span class="params">                          VectorStore vectorStore)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> ChatClient.builder(chatModel)</span><br><span class="line">            .defaultAdvisors(<span class="keyword">new</span> <span class="title class_">QuestionAnswerAdvisor</span>(vectorStore))</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>Then use it anywhere:</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ChatController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatClient chatClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/chat&quot;)</span></span><br><span class="line">    String <span class="title function_">chat</span><span class="params">(<span class="meta">@RequestBody</span> String question)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .user(question)</span><br><span class="line">            .call()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="What’s-Next"><a href="#What’s-Next" class="headerlink" title="What’s Next"></a>What’s Next</h2><p>I’m currently exploring <strong>Agentic RAG</strong> — where the LLM decides whether to search, what to search for, and how many retrieval rounds to run. This is especially useful for complex multi-hop questions.</p><hr><p><em>Follow me on <a href="https://github.com/RyanCoreAI">GitHub</a> for more production AI engineering content.</em></p>]]></content>
+    
+    
+    <summary type="html">A practical guide to building production RAG systems with Spring AI — hybrid retrieval, reranking, chunking strategies, and evaluation pipelines. Based on real-world experience achieving 93% Recall@3.</summary>
+    
+    
+    
+    <category term="AI Engineering" scheme="https://ryancoreai.github.io/blog/categories/ai-engineering/"/>
+    
+    
+    <category term="Spring AI" scheme="https://ryancoreai.github.io/tags/spring-ai/"/>
+    
+    <category term="RAG" scheme="https://ryancoreai.github.io/tags/rag/"/>
+    
+    <category term="PGVector" scheme="https://ryancoreai.github.io/tags/pgvector/"/>
+    
+    <category term="Java" scheme="https://ryancoreai.github.io/tags/java/"/>
+    
+    <category term="LLM" scheme="https://ryancoreai.github.io/tags/llm/"/>
+    
+    <category term="Embedding" scheme="https://ryancoreai.github.io/tags/embedding/"/>
+    
+  </entry>
+  
+</feed>

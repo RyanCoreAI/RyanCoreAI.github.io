@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Sitemap: https://ryancoreai.github.io/sitemap.xml
+Sitemap: https://yanxai.com/sitemap.xml
 
 # Block AI training crawlers
 User-agent: GPTBot
