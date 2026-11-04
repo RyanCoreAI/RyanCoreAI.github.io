@@ -1,0 +1,364 @@
+<!DOCTYPE HTML><html lang="zh-CN"><head><meta charset="utf-8"><script>!function(){var t=document.documentElement;setTimeout((function(){t.style.visibility="",t.style.opacity=""}),1e4)}()</script><link rel="preconnect" href="https://yanxai.com"><link rel="preload" as="image" href="/medias/featureimages/16.webp" fetchpriority="high"><link rel="preload" as="image" href="/medias/cat-logo.svg" fetchpriority="high"><meta name="keywords" content="AI 应用生产级护栏实战：限流、日志、降级、缓存、审计、成本, blog"><meta name="description" content="按一次 AI 请求的生命周期，拆解限流、幂等、日志、缓存、失败补偿、任务队列和成本记录。"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="renderer" content="webkit|ie-stand|ie-comp"><meta name="mobile-web-app-capable" content="yes"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="referrer" content="no-referrer-when-downgrade"><title>AI 应用生产级护栏实战：限流、日志、降级、缓存、审计、成本 | RyanCoreAI</title><link rel="alternate" type="application/atom+xml" title="RyanCoreAI" href="/atom.xml"><link rel="alternate" type="application/rss+xml" title="RyanCoreAI" href="/rss.xml"><meta property="og:type" content="article"><meta property="og:title" content="AI 应用生产级护栏实战：限流、日志、降级、缓存、审计、成本 | RyanCoreAI"><meta property="og:description" content="按一次 AI 请求的生命周期，拆解限流、幂等、日志、缓存、失败补偿、任务队列和成本记录。"><meta property="og:url" content="https://yanxai.com/p/ai-production-guardrails/"><link rel="canonical" href="https://yanxai.com/p/ai-production-guardrails/"><meta property="og:image" content="https://yanxai.com/images/csdn/162605562/01.webp"><meta property="og:site_name" content="RyanCoreAI"><meta property="og:locale" content="zh-CN"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="AI 应用生产级护栏实战：限流、日志、降级、缓存、审计、成本 | RyanCoreAI"><meta name="twitter:description" content="按一次 AI 请求的生命周期，拆解限流、幂等、日志、缓存、失败补偿、任务队列和成本记录。"><meta name="twitter:image" content="https://yanxai.com/images/csdn/162605562/01.webp"><link rel="icon" type="image/svg+xml" href="/medias/cat-logo.svg"><link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css" media="print" onload='this.media="all"'><link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css"><link rel="stylesheet" type="text/css" href="/libs/aos/aos.css" media="print" onload='this.media="all"'><link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css" media="print" onload='this.media="all"'><link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css" media="print" onload='this.media="all"'><link rel="stylesheet" type="text/css" href="/css/matery.css"><link rel="stylesheet" type="text/css" href="/css/my.css"><link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload='"all"!=this.media&&(this.media="all")'><link rel="stylesheet" href="/libs/tocbot/tocbot.css"><link rel="stylesheet" href="/css/post.css">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head><body><header class="navbar-fixed"><nav id="headNav" class="bg-color nav-transparent"><div id="navContainer" class="nav-wrapper container"><div class="brand-logo"><a href="/" class="waves-effect waves-light"><img src="/medias/cat-logo.svg" class="logo-img" alt="LOGO"> <span class="logo-span">RyanCoreAI</span></a></div><a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a><ul class="right nav-menu"><li class="hide-on-med-and-down nav-item"><a href="/" class="waves-effect waves-light"><i class="fas fa-home" style="zoom:.6"></i> <span>首页</span></a></li><li class="hide-on-med-and-down nav-item"><a href="/categories" class="waves-effect waves-light"><i class="fas fa-bookmark" style="zoom:.6"></i> <span>分类</span></a></li><li class="hide-on-med-and-down nav-item"><a href="/about" class="waves-effect waves-light"><i class="fas fa-user-circle" style="zoom:.6"></i> <span>关于</span></a></li><li class="hide-on-med-and-down nav-item"><a href="/projects" class="waves-effect waves-light"><i class="fas fa-project-diagram" style="zoom:.6"></i> <span>项目</span></a></li><li class="hide-on-med-and-down nav-item"><a href="/tags" class="waves-effect waves-light"><i class="fas fa-tags" style="zoom:.6"></i> <span>标签</span></a></li><li class="hide-on-med-and-down nav-item"><a href="/archives" class="waves-effect waves-light"><i class="fas fa-archive" style="zoom:.6"></i> <span>归档</span></a></li><li class="hide-on-med-and-down nav-item"><a href="/contact" class="waves-effect waves-light"><i class="fas fa-comments" style="zoom:.6"></i> <span>反馈</span></a></li><li class="hide-on-med-and-down nav-item"><a href="/friends" class="waves-effect waves-light"><i class="fas fa-address-book" style="zoom:.6"></i> <span>友情链接</span></a></li><li><a href="#searchModal" class="modal-trigger waves-effect waves-light"><i id="searchIcon" class="fas fa-search" title="搜索" style="zoom:.85"></i></a></li><li><a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式"><i id="sum-moon-icon" class="fas fa-sun" style="zoom:.85"></i></a></li></ul><div id="mobile-nav" class="side-nav sidenav"><div class="mobile-head bg-color"><img src="/medias/cat-logo.svg" class="logo-img circle responsive-img"><div class="logo-name">RyanCoreAI</div><div class="logo-desc">记录可信 AI 应用工程、项目复盘与长期成长</div></div><ul class="menu-list mobile-menu-list"><li class="m-nav-item"><a href="/" class="waves-effect waves-light"><i class="fa-fw fas fa-home"></i> 首页</a></li><li class="m-nav-item"><a href="/categories" class="waves-effect waves-light"><i class="fa-fw fas fa-bookmark"></i> 分类</a></li><li class="m-nav-item"><a href="/about" class="waves-effect waves-light"><i class="fa-fw fas fa-user-circle"></i> 关于</a></li><li class="m-nav-item"><a href="/projects" class="waves-effect waves-light"><i class="fa-fw fas fa-project-diagram"></i> 项目</a></li><li class="m-nav-item"><a href="/tags" class="waves-effect waves-light"><i class="fa-fw fas fa-tags"></i> 标签</a></li><li class="m-nav-item"><a href="/archives" class="waves-effect waves-light"><i class="fa-fw fas fa-archive"></i> 归档</a></li><li class="m-nav-item"><a href="/contact" class="waves-effect waves-light"><i class="fa-fw fas fa-comments"></i> 反馈</a></li><li class="m-nav-item"><a href="/friends" class="waves-effect waves-light"><i class="fa-fw fas fa-address-book"></i> 友情链接</a></li><li><div class="divider"></div></li><li><a href="https://github.com/RyanCoreAI" class="waves-effect waves-light" target="_blank"><i class="fab fa-github-square fa-fw"></i>Github</a></li></ul></div></div><style>.nav-transparent .github-corner{display:none!important}.github-corner{position:absolute;z-index:10;top:0;right:0;border:0;transform:scale(1.1)}.github-corner svg{color:#8b5cf6;fill:#fff;height:64px;width:64px}.github-corner:hover .octo-arm{animation:a .56s ease-in-out}.github-corner .octo-arm{animation:none}@keyframes a{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}</style><a href="https://github.com/RyanCoreAI" class="github-corner tooltipped hide-on-med-and-down" target="_blank" data-tooltip="Github" data-position="left" data-delay="50"><svg viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin:130px 106px" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a></nav></header><div class="bg-cover pd-header post-cover theme-purple" style="background-image:url(/medias/featureimages/16.webp)"><div class="container" style="right:0;left:0"><div class="row"><div class="col s12 m12 l12"><div class="brand"><h1 class="description center-align post-title">AI 应用生产级护栏实战：限流、日志、降级、缓存、审计、成本</h1></div></div></div></div></div><main class="post-with-sidebar content post-doc-preview"><aside id="categorySidebar" class="category-sidebar"><div class="sidebar-header"><h5><i class="fas fa-list-ul"></i> 文章导航</h5><button id="sidebarClose" class="sidebar-close hide-on-large-only">&times;</button></div><div class="sidebar-body"><div class="sidebar-tree"><details class="sidebar-cat" data-cat="AI应用工程" open><summary class="sidebar-summary active"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">AI应用工程</span> <span class="sidebar-count">5</span></summary><details class="sidebar-subcat" data-cat="AI应用工程/部署与运维"><summary class="sidebar-summary sidebar-subcat-summary"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">部署与运维</span> <span class="sidebar-count">2</span></summary><ul class="sidebar-articles"><li><a href="/p/public-server-ssh-security/">我的服务器被暴力破解 10 万次后，我才真正理解公网安全</a></li><li><a href="/p/ai-app-deployment-domain/">AI应用项目部署上线和域名绑定保姆级流程：SpringBoot+Vue+AI+Nginx+Docker+Docker</a></li></ul></details><details class="sidebar-subcat" data-cat="AI应用工程/RAG专题"><summary class="sidebar-summary sidebar-subcat-summary"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">RAG专题</span> <span class="sidebar-count">2</span></summary><ul class="sidebar-articles"><li><a href="/p/rag-core-terms/">一文讲透 RAG 核心术语：Embedding、Chunk、Vector DB、BM25、Reranker 到底是什么</a></li><li><a href="/p/rag-evidence-chain/">RAG 不是外挂知识库，而是一套证据链系统</a></li></ul></details><details class="sidebar-subcat" data-cat="AI应用工程/生产护栏" open><summary class="sidebar-summary sidebar-subcat-summary active"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">生产护栏</span> <span class="sidebar-count">1</span></summary><ul class="sidebar-articles"><li><a href="/p/ai-production-guardrails/" class="current">AI 应用生产级护栏实战：限流、日志、降级、缓存、审计、成本 <span class="current-dot"></span></a></li></ul></details></details><details class="sidebar-cat" data-cat="项目"><summary class="sidebar-summary"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">项目</span> <span class="sidebar-count">5</span></summary><details class="sidebar-subcat" data-cat="项目/简喵"><summary class="sidebar-summary sidebar-subcat-summary"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">简喵</span> <span class="sidebar-count">2</span></summary><ul class="sidebar-articles"><li><a href="/p/jianmiao-minimal-rag-agent/">简喵技术复盘：我如何用最小 RAG 和最小 Agent，让 AI 简历优化从生成变成可复盘任务</a></li><li><a href="/p/jianmiao-launch/">历时 3 个月，我从 0 上线了一个证据约束型 AI 求职助手：简喵</a></li></ul></details><details class="sidebar-subcat" data-cat="项目/个人博客"><summary class="sidebar-summary sidebar-subcat-summary"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">个人博客</span> <span class="sidebar-count">1</span></summary><ul class="sidebar-articles"><li><a href="/2026/05/10/hexo-matery-blog-jian-zhan-jiao-cheng/">Hexo + Matery 主题从零搭建个人博客完整教程（GitHub Pages 部署 + 美化优化全流程）</a></li></ul></details><details class="sidebar-subcat" data-cat="项目/PatchBrake"><summary class="sidebar-summary sidebar-subcat-summary"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">PatchBrake</span> <span class="sidebar-count">1</span></summary><ul class="sidebar-articles"><li><a href="/p/patchbrake/">我让 AI 改代码，它悄悄删了测试、放大了 CI 权限，所以我做了 PatchBrake</a></li></ul></details><details class="sidebar-subcat" data-cat="项目/Token Studio ROI"><summary class="sidebar-summary sidebar-subcat-summary"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">Token Studio ROI</span> <span class="sidebar-count">1</span></summary><ul class="sidebar-articles"><li><a href="/p/token-studio-roi/">我做了 Token Studio：AI 编程花掉的 Token，到底换来了什么？</a></li></ul></details></details><details class="sidebar-cat" data-cat="AI时代思考"><summary class="sidebar-summary"><span class="sidebar-triangle"></span> <span class="sidebar-cat-name">AI时代思考</span> <span class="sidebar-count">1</span></summary><ul class="sidebar-articles"><li><a href="/p/ai-coding-trustworthy-delivery/">小白用 Codex 和 Claude Code 也能做产品，程序员的出路在哪里？</a></li></ul></details></div></div></aside><div id="sidebarOverlay" class="sidebar-overlay hide-on-large-only"></div><button id="sidebarToggle" class="sidebar-toggle-btn hide-on-large-only"><i class="fas fa-bookmark"></i> 分类</button><div class="post-main"><div class="row post-doc-row"><div id="main-content" class="col s12 m12 l9 post-doc-content"><nav class="breadcrumb-nav"><div class="nav-wrapper"><div class="col s12"><a href="/" class="breadcrumb">Home</a> <a href="/categories/AI%E5%BA%94%E7%94%A8%E5%B7%A5%E7%A8%8B/" class="breadcrumb">AI应用工程</a> <span class="breadcrumb active">生产护栏</span></div></div></nav><div id="artDetail"><div class="card"><div class="card-content article-info"><div class="row tag-cate"><div class="col s7"><div class="article-tag"><a href="/tags/Guardrails/"><span class="chip bg-color">Guardrails</span> </a><a href="/tags/Redis/"><span class="chip bg-color">Redis</span> </a><a href="/tags/Observability/"><span class="chip bg-color">Observability</span> </a><a href="/tags/LLM/"><span class="chip bg-color">LLM</span> </a><a href="/tags/Evals/"><span class="chip bg-color">Evals</span></a></div></div><div class="col s5 right-align"><div class="post-cate"><i class="fas fa-bookmark fa-fw icon-category"></i> <a href="/categories/AI%E5%BA%94%E7%94%A8%E5%B7%A5%E7%A8%8B/" class="post-category">AI应用工程 </a><a href="/categories/AI%E5%BA%94%E7%94%A8%E5%B7%A5%E7%A8%8B/%E7%94%9F%E4%BA%A7%E6%8A%A4%E6%A0%8F/" class="post-category">生产护栏</a></div></div></div><div class="post-info"><div class="post-date info-break-policy"><i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp; 2026-07-05</div><div class="post-date info-break-policy"><i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp; 2026-11-04</div><div class="info-break-policy"><i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp; 6.8k</div><div class="info-break-policy"><i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp; 25 分</div><div id="busuanzi_container_page_pv" class="info-break-policy"><i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp; <span id="busuanzi_value_page_pv"></span></div></div></div><hr class="clearfix"><link rel="stylesheet" href="/libs/prism/prism.min.css"><div class="card-content article-card-content"><div id="articleContent"><blockquote><p>本文同步收录自我在<a target="_blank" rel="noopener" href="https://www.codefather.cn/post/2073678798640906242">编程导航发布的同名文章</a>；另见 <a target="_blank" rel="noopener" href="https://blog.csdn.net/2401_87875091/article/details/162605562">CSDN 版本</a>。正文以所链接的编程导航公开版本为准，保留该版本的原始发布日期。</p><p>本文保留原文“已做、进行中、后续补齐”的阶段划分，清单中的条目不代表全部已实现。</p></blockquote><h2 id="一、AI-应用上线最小护栏清单"><a href="#一、AI-应用上线最小护栏清单" class="headerlink" title="一、AI 应用上线最小护栏清单"></a>一、AI 应用上线最小护栏清单</h2><span id="more"></span><p>如果你的 AI 应用准备上线，至少要有这张表。</p><table><thead><tr><th>护栏</th><th>必须做什么</th><th>不做的后果</th></tr></thead><tbody><tr><td>用户级限流</td><td>限制单用户每分钟、每天、每月调用次数</td><td>被单个用户刷爆额度</td></tr><tr><td>IP 级限流</td><td>限制匿名 IP 或异常 IP 请求</td><td>被脚本、爬虫、代理刷爆</td></tr><tr><td>高成本接口单独限流</td><td>对深度分析、PDF、长上下文接口加更严限制</td><td>一个按钮打穿账单</td></tr><tr><td>AI 任务幂等</td><td>同一输入重复提交只生成一个任务</td><td>重复扣点、重复调用模型</td></tr><tr><td>traceId</td><td>每个请求贯穿前端、后端、AI、PDF、日志</td><td>出错无法定位</td></tr><tr><td>AI 调用日志</td><td>记录模型、耗时、token、状态、错误码</td><td>无法审计和复盘</td></tr><tr><td>模型错误码分类</td><td>区分限流、超时、鉴权、内容安全、JSON 失败</td><td>全部变成“服务器异常”</td></tr><tr><td>JSON 解析失败兜底</td><td>Schema 校验、修复、降级结果</td><td>模型输出一乱前端就崩</td></tr><tr><td>Redis 缓存</td><td>对相同输入、相同 Prompt 版本复用结果</td><td>重复请求浪费成本</td></tr><tr><td>输入 hash</td><td>不直接用原文做缓存 key</td><td>泄露隐私、缓存不可控</td></tr><tr><td>promptVersion</td><td>Prompt 改版后缓存自动失效</td><td>新旧结果混用</td></tr><tr><td>token 成本记录</td><td>记录 input/output/cached token 和估算成本</td><td>账单不可解释</td></tr><tr><td>失败不乱扣点</td><td>reserve、commit、refund 三段式扣点</td><td>用户信任崩塌</td></tr><tr><td>PDF 任务队列</td><td>导出走异步队列，限制并发</td><td>Puppeteer/浏览器服务被打爆</td></tr><tr><td>审计记录</td><td>记录谁在什么时候对什么数据做了什么 AI 操作</td><td>出问题无法追责</td></tr></tbody></table><p>这些不是“大厂才需要”的东西。只要你接了大模型 API，只要你的产品对外开放，哪怕只有几十个内测用户，也应该做最小版本。如果把这些护栏压缩成一张图，它大概是这样的：</p><p><img loading="lazy" decoding="async" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0Ij48Y2lyY2xlIGN4PSI0IiBjeT0iMTIiIHI9IjMiIGZpbGw9ImN1cnJlbnRDb2xvciI+PGFuaW1hdGUgaWQ9InN2Z1NwaW5uZXJzM0RvdHNTY2FsZTAiIGF0dHJpYnV0ZU5hbWU9InIiIGJlZ2luPSIwO3N2Z1NwaW5uZXJzM0RvdHNTY2FsZTEuZW5kLTAuMjVzIiBkdXI9IjAuNzVzIiB2YWx1ZXM9IjM7LjI7MyIvPjwvY2lyY2xlPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjMiIGZpbGw9ImN1cnJlbnRDb2xvciI+PGFuaW1hdGUgYXR0cmlidXRlTmFtZT0iciIgYmVnaW49InN2Z1NwaW5uZXJzM0RvdHNTY2FsZTAuZW5kLTAuNnMiIGR1cj0iMC43NXMiIHZhbHVlcz0iMzsuMjszIi8+PC9jaXJjbGU+PGNpcmNsZSBjeD0iMjAiIGN5PSIxMiIgcj0iMyIgZmlsbD0iY3VycmVudENvbG9yIj48YW5pbWF0ZSBpZD0ic3ZnU3Bpbm5lcnMzRG90c1NjYWxlMSIgYXR0cmlidXRlTmFtZT0iciIgYmVnaW49InN2Z1NwaW5uZXJzM0RvdHNTY2FsZTAuZW5kLTAuNDVzIiBkdXI9IjAuNzVzIiB2YWx1ZXM9IjM7LjI7MyIvPjwvY2lyY2xlPjwvc3ZnPg==" data-original="/images/csdn/162605562/01.webp" alt="在这里插入图片描述"></p><p>很多 AI 应用 Demo 看起来都很简单：用户输入一段文本，后端拼一个 Prompt，请求大模型，再把结果展示出来。</p><p>但一旦真的上线，问题会马上暴露：</p><ul><li>用户连续点按钮，模型账单飙升；</li><li>同一个请求重复提交，扣了多次额度；</li><li>模型返回半截 JSON，前端直接崩；</li><li>第三方模型限流，用户只看到“服务器异常”；</li><li>AI 生成失败了，系统却扣了点数；</li><li>管理员想查一次调用为什么失败，结果没有 traceId、没有日志、没有成本记录；</li><li>PDF、AI、上传、分享这些高成本/高风险链路全部挤在同步接口里。</li></ul><p>所以，AI 应用从 Demo 到可上线产品，中间真正差的不是“多接几个模型”，而是一套最小生产护栏。</p><p>为了不把这些护栏讲成散点，下面我会按一次 AI 请求的生命周期来拆：</p><p>入口阶段：先挡住异常用户、异常 IP 和高成本请求；<br>任务阶段：保证同一请求不会重复创建、重复调用、重复扣点；<br>调用阶段：通过 AI Gateway 统一记录模型、token、耗时和错误；<br>输出阶段：对 JSON、Schema、质量门禁和 fallback 做兜底；<br>追踪阶段：用 traceId、调用日志、审计日志把整条链路串起来。</p><p>也就是说，AI 应用上线不是给每个接口加几个 if，而是把一次 AI 调用当成一个可追踪、可补偿、可审计的任务。</p><p>这篇文章以我上线简喵的经验为例，拆一套 AI 应用上线后必须具备的工程护栏：限流、日志、降级、缓存、审计、成本、任务队列和失败兜底。</p><p>简喵是一个证据约束型 AI 求职助手，核心链路是：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">简历模板 / 编辑
+→ 目标岗位分析（JD诊断）
+→ 岗位竞争力诊断
+→ 投递文案
+→ PDF 导出</code></pre><p>这类项目的特点很典型：AI 调用有成本，用户输入包含隐私，模型输出必须结构化，失败不能乱扣额度，生成结果还要能追溯。</p><p>简喵项目在线体验地址：<a target="_blank" rel="noopener" href="https://jianmiao.yanxai.com/">在线体验</a></p><p>部署上线及域名绑定全流程：****</p><p>AI功能测试见上一篇博客：****</p><hr><h2 id="二、总链路：不要让业务接口直接调用模型"><a href="#二、总链路：不要让业务接口直接调用模型" class="headerlink" title="二、总链路：不要让业务接口直接调用模型"></a>二、总链路：不要让业务接口直接调用模型</h2><p>先看整体链路。后面所有护栏，都是围绕这条链路展开的。</p><p>很多早期项目会这样写：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">Controller
+→ 拼 Prompt
+→ 调模型
+→ 返回结果</code></pre><p>这在 Demo 阶段可以跑，但上线后非常危险。更合理的结构应该是：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">用户请求
+→ API Controller
+→ 鉴权 / CSRF / 参数校验
+→ 限流
+→ 额度预占
+→ 幂等任务检查
+→ 异步任务队列
+→ AI Gateway
+→ 模型供应商
+→ JSON 校验 / 降级
+→ 结果入库
+→ 扣点提交或退款
+→ 前端轮询任务结果</code></pre><p>可以画成这样：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">flowchart TD
+  A["用户提交 AI 请求"] --&gt; B["鉴权 / 参数校验"]
+  B --&gt; C["用户级 + IP 级限流"]
+  C --&gt; D["额度预占 reserve"]
+  D --&gt; E["生成 inputHash + idempotencyKey"]
+  E --&gt; F{"是否已有相同任务"}
+  F --&gt;|有| G["返回已有 taskId"]
+  F --&gt;|无| H["写入 async_task"]
+  H --&gt; I["AI Gateway"]
+  I --&gt; J["模型供应商"]
+  J --&gt; K["结构化输出校验"]
+  K --&gt;|成功| L["结果入库 + commit 扣点"]
+  K --&gt;|失败| M["降级 / fallback + refund"]
+  L --&gt; N["审计日志"]
+  M --&gt; N
+  N --&gt; O["前端轮询展示"]</code></pre><p>这里的关键点是：<strong>AI 调用不是一个普通同步接口，而是一个有成本、有状态、有失败补偿的任务。</strong></p><p>后面按五层护栏展开：防成本失控、防重复提交、防模型输出失控、防问题无法追踪、防高成本任务拖垮服务。</p><hr><h2 id="三、第一层护栏：防止成本被刷爆"><a href="#三、第一层护栏：防止成本被刷爆" class="headerlink" title="三、第一层护栏：防止成本被刷爆"></a>三、第一层护栏：防止成本被刷爆</h2><p>第一层护栏解决的是成本和滥用问题：谁能调用、多久能调用一次、哪些高成本接口必须更严格限制。</p><p>AI 应用不能只做一个全局限流。不同风险要分层。</p><h3 id="1-用户级限流"><a href="#1-用户级限流" class="headerlink" title="1. 用户级限流"></a>1. 用户级限流</h3><p>用户级限流解决的是“单个登录用户重复点击或恶意刷调用”。</p><p>例如：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">目标岗位分析：每用户每分钟 2 次
+岗位竞争力诊断：每用户每分钟 1 次
+投递文案：每用户每分钟 3 次</code></pre><p>Redis key 可以这样设计：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">rate:user:{userId}:{feature}:{window}</code></pre><p>例如：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">rate:user:123:job_score:202607041530</code></pre><p>如果使用滑动窗口，key 可以更细：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">rate:user:{userId}:{feature}:sliding</code></pre><p>value 用 sorted set 存时间戳。</p><p>Redis 官方文档里也明确提到，滑动窗口比固定窗口更能平滑处理突发请求，避免固定窗口边界被打穿。</p><h3 id="2-IP-级限流"><a href="#2-IP-级限流" class="headerlink" title="2. IP 级限流"></a>2. IP 级限流</h3><p>IP 级限流解决的是匿名请求、注册接口、登录接口、验证码接口、分享访问、PDF 下载等入口被刷。</p><p>例如：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">rate:ip:{clientIp}:auth_login
+rate:ip:{clientIp}:pdf_export
+rate:ip:{clientIp}:ai_submit</code></pre><p>注意：如果你用了 Cloudflare / Nginx 反代，后端不能直接信任 <code>X-Forwarded-For</code>。必须只信任来自 Cloudflare 或受控反代的真实 IP 头，否则攻击者可以伪造 IP 绕过限流。</p><h3 id="3-高成本接口单独限流"><a href="#3-高成本接口单独限流" class="headerlink" title="3. 高成本接口单独限流"></a>3. 高成本接口单独限流</h3><p>AI 应用里不是所有接口成本一样。</p><p>低成本：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">投递短文案
+简历字段建议
+标题润色</code></pre><p>高成本：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">长简历 + 长 JD 深度诊断
+岗位竞争力体检
+面试追问包
+PDF 服务端导出
+OCR / 文档解析</code></pre><p>高成本接口应该有单独阈值：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">rate:user:{userId}:heavy_ai
+rate:ip:{ip}:heavy_ai
+rate:global:heavy_ai</code></pre><p>这样即使单个用户额度足够，也不能瞬间把队列打爆。</p><h3 id="4-Redis-缓存：缓存的是“同一输入-同一-Prompt-版本”的结果"><a href="#4-Redis-缓存：缓存的是“同一输入-同一-Prompt-版本”的结果" class="headerlink" title="4. Redis 缓存：缓存的是“同一输入 + 同一 Prompt 版本”的结果"></a>4. Redis 缓存：缓存的是“同一输入 + 同一 Prompt 版本”的结果</h3><p>AI 缓存不是简单把用户问题当 key。</p><p>错误做法：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">cacheKey = userInput</code></pre><p>问题：</p><ul><li>泄露隐私；</li><li>文本太长；</li><li>Prompt 改了以后还命中旧结果；</li><li>不同模型结果混用；</li><li>不同用户场景串污染。</li></ul><p>正确做法：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">cacheKey =
+  ai:cache:{feature}:{model}:{promptVersion}:{inputHash}</code></pre><p>其中 <code>inputHash</code> 可以这样算：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">sha256(
+  normalizedResumeVersion
+  + normalizedJD
+  + scenario
+  + promptVersion
+)</code></pre><p>缓存值里记录：</p><pre class="line-numbers language-json"><code class="language-json">{
+  "result": {},
+  "promptVersion": "job-score-v3",
+  "model": "glm-5.2",
+  "createdAt": "2026-07-04T12:00:00",
+  "ttl": 86400
+}</code></pre><p>缓存 TTL 建议：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">投递文案：几小时到 1 天
+JD 诊断：1 到 7 天
+岗位竞争力诊断：1 到 7 天
+高风险写入类建议：短 TTL 或不缓存</code></pre><p>重复 Prompt 前缀可以降低延迟和成本，但这是模型供应商层面的缓存；业务侧仍需要自己的结果缓存和幂等。</p><h3 id="5-token-成本记录：AI-成本不是月底看账单才知道"><a href="#5-token-成本记录：AI-成本不是月底看账单才知道" class="headerlink" title="5. token 成本记录：AI 成本不是月底看账单才知道"></a>5. token 成本记录：AI 成本不是月底看账单才知道</h3><p>AI 成本必须在每次调用时记录。</p><p>至少记录：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">inputTokens
+outputTokens
+cachedTokens
+modelName
+unitPrice
+estimatedCost
+actualCostStatus</code></pre><p>如果供应商返回 usage，就用供应商 usage。</p><p>如果不返回，就用本地 tokenizer 或估算逻辑，标记为 estimated。</p><p>一条成本记录可以长这样：</p><pre class="line-numbers language-json"><code class="language-json">{
+  "feature": "JOB_SCORE",
+  "model": "GLM-5.2",
+  "inputTokens": 6200,
+  "outputTokens": 1800,
+  "cachedTokens": 0,
+  "estimatedCost": 0.018,
+  "currency": "CNY",
+  "traceId": "01JZ..."
+}</code></pre><p>如果是免费产品，也不能没有成本记录。免费不等于没有成本，只是你暂时替用户承担了成本。</p><p>这一层护栏的目标很简单：不要等到账单爆了才发现问题。限流负责挡住异常调用，缓存负责减少重复调用，token 成本记录负责解释每一次调用到底花在哪里。</p><hr><h2 id="四、第二层护栏：防止重复提交和乱扣点"><a href="#四、第二层护栏：防止重复提交和乱扣点" class="headerlink" title="四、第二层护栏：防止重复提交和乱扣点"></a>四、第二层护栏：防止重复提交和乱扣点</h2><p>第二层护栏解决的是任务一致性问题：同一个输入不能重复创建任务，不能重复调用模型，更不能重复扣点。</p><h3 id="1-AI-任务幂等：同一请求不要重复扣费"><a href="#1-AI-任务幂等：同一请求不要重复扣费" class="headerlink" title="1. AI 任务幂等：同一请求不要重复扣费"></a>1. AI 任务幂等：同一请求不要重复扣费</h3><p>这是很多 AI 产品最容易忽略的问题。</p><p>用户点击“生成岗位竞争力诊断”，如果网络慢，他可能连续点三次。没有幂等的话，后端会创建三个任务，调用三次模型，扣三次点数。</p><p>正确做法是生成一个幂等 key：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">idempotencyKey =
+  userId
+  + feature
+  + resumeVersionId
+  + jobSessionId
+  + inputHash
+  + promptVersion
+  + model</code></pre><p>其中：</p><ul><li><code>inputHash</code>：用户输入、简历版本、JD 文本等核心输入的 hash；</li><li><code>promptVersion</code>：Prompt 模板版本；</li><li><code>feature</code>：功能名，例如 <code>JD_DIAGNOSIS</code>、<code>JOB_SCORE</code>、<code>DELIVERY_NOTE</code>；</li><li><code>resumeVersionId / jobSessionId</code>：避免不同会话串结果。</li></ul><p>示例代码：</p><pre class="line-numbers language-java"><code class="language-java">String key = buildIdempotencyKey(userId, feature, versionId, sessionId, inputHash, promptVersion);
+
+AiTask existing = taskRepository.findRunningOrRecentByKey(key);
+
+if (existing != null) {
+    return existing.taskId();
+}
+
+AiTask task = taskRepository.createQueuedTask(key, userId, feature);
+queue.submit(task);
+return task.taskId();</code></pre><p>状态机建议至少包含：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">queued
+running
+succeeded
+failed
+canceled
+refunded</code></pre><p>不要只用 <code>success=true/false</code>。AI 任务是长链路，状态必须可解释。</p><h3 id="2-失败不乱扣点：reserve、commit、refund-三段式"><a href="#2-失败不乱扣点：reserve、commit、refund-三段式" class="headerlink" title="2. 失败不乱扣点：reserve、commit、refund 三段式"></a>2. 失败不乱扣点：reserve、commit、refund 三段式</h3><p>这是用户信任的底线。</p><p>错误做法：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">用户点击按钮
+→ 直接扣点
+→ 模型失败
+→ 用户没结果也没点数</code></pre><p>正确做法：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">1. reserve：创建任务时预占额度
+2. commit：任务成功并通过质量校验后正式扣点
+3. refund：任务失败、超时、JSON 不合格、质量门禁拒绝时退回</code></pre><p>状态流：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">stateDiagram-v2
+  [*] --&gt; RESERVED
+  RESERVED --&gt; COMMITTED: AI成功且结果可展示
+  RESERVED --&gt; REFUNDED: 模型失败/超时/解析失败
+  RESERVED --&gt; EXPIRED: 长时间未执行
+  COMMITTED --&gt; [*]
+  REFUNDED --&gt; [*]
+  EXPIRED --&gt; [*]</code></pre><p>账本表建议：</p><pre class="line-numbers language-sql"><code class="language-sql">CREATE TABLE ai_credit_ledger (
+  id BIGINT PRIMARY KEY,
+  user_id BIGINT,
+  task_id BIGINT,
+  feature VARCHAR(64),
+  change_amount INT,
+  balance_after INT,
+  type VARCHAR(32), -- RESERVE / COMMIT / REFUND
+  reason VARCHAR(255),
+  trace_id VARCHAR(64),
+  created_at DATETIME
+);</code></pre><p>用户看到的文案也要讲人话：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">AI 服务暂时不可用，本次未消耗额度。</code></pre><p>不要写：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">MODEL_EMPTY_OUTPUT
+reserve credits failed
+JSON parse error</code></pre><p>内部错误码留给日志，不要泄漏给普通用户。</p><p>这一层护栏的目标不是提升模型效果，而是保护用户信任：网络慢、模型失败、JSON 解析失败，都不能让用户承担系统的不确定性。</p><hr><h2 id="五、第三层护栏：防止模型输出失控"><a href="#五、第三层护栏：防止模型输出失控" class="headerlink" title="五、第三层护栏：防止模型输出失控"></a>五、第三层护栏：防止模型输出失控</h2><p>第三层护栏解决的是模型输出不稳定问题：模型可以生成内容，但不能直接决定业务结果。所有输出都必须经过错误分类、Schema 校验、质量门禁和前端可理解的提示。</p><h3 id="1-模型错误码分类：不要全都叫服务器异常"><a href="#1-模型错误码分类：不要全都叫服务器异常" class="headerlink" title="1. 模型错误码分类：不要全都叫服务器异常"></a>1. 模型错误码分类：不要全都叫服务器异常</h3><p>模型调用失败不等于系统崩了。至少要分这些类型：</p><table><thead><tr><th>错误码</th><th>含义</th><th>用户提示</th></tr></thead><tbody><tr><td><code>MODEL_TIMEOUT</code></td><td>模型超时</td><td>AI 服务响应较慢，请稍后重试</td></tr><tr><td><code>MODEL_RATE_LIMITED</code></td><td>供应商限流</td><td>当前 AI 服务繁忙，已保留你的内容</td></tr><tr><td><code>MODEL_AUTH_FAILED</code></td><td>API Key / 鉴权失败</td><td>服务配置异常，请联系管理员</td></tr><tr><td><code>MODEL_SERVER_ERROR</code></td><td>模型供应商 5xx</td><td>AI 服务暂不可用，请稍后再试</td></tr><tr><td><code>MODEL_CONTENT_BLOCKED</code></td><td>内容安全拦截</td><td>当前内容无法生成，请调整输入</td></tr><tr><td><code>MODEL_EMPTY_OUTPUT</code></td><td>返回为空</td><td>已生成保守兜底版本或未消耗额度</td></tr><tr><td><code>JSON_PARSE_FAILED</code></td><td>JSON 解析失败</td><td>AI 返回格式异常，系统已降级处理</td></tr><tr><td><code>SCHEMA_VALIDATION_FAILED</code></td><td>Schema 校验失败</td><td>结果结构不完整，未写入最终结果</td></tr><tr><td><code>QUALITY_GATE_REJECTED</code></td><td>质量门禁拒绝</td><td>本次结果未达到展示标准，未扣点或已退回</td></tr></tbody></table><h3 id="2-JSON-解析失败兜底：结构化输出也不能完全裸奔"><a href="#2-JSON-解析失败兜底：结构化输出也不能完全裸奔" class="headerlink" title="2. JSON 解析失败兜底：结构化输出也不能完全裸奔"></a>2. JSON 解析失败兜底：结构化输出也不能完全裸奔</h3><p>AI 应用经常要求模型返回 JSON：</p><pre class="line-numbers language-json"><code class="language-json">{
+  "score": 82,
+  "summary": "...",
+  "risks": [],
+  "fixTasks": []
+}</code></pre><p>但真实线上会遇到：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">- JSON 前后带 Markdown
+- 少一个右括号
+- enum 返回了不存在的值
+- 数组变成字符串
+- 空字段过多
+- 模型把解释写到 JSON 外面</code></pre><p>如果直接 <code>JSON.parse()</code>，前端就会炸。</p><p>生产级做法：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">模型输出
+→ 提取 JSON 块
+→ JSON parse
+→ Schema 校验
+→ 一次修复
+→ 再校验
+→ 失败则 fallback</code></pre><p>如果模型支持结构化输出，优先使用 Schema 约束。但即使使用结构化输出，仍建议保留后端 Schema 校验，因为你不应该把模型输出直接写入数据库或 HTML。</p><p>伪代码：</p><pre class="line-numbers language-java"><code class="language-java">try {
+    ParsedResult result = parser.parse(rawOutput);
+    validator.validate(result);
+    return result;
+} catch (JsonParseException e) {
+    String repaired = jsonRepair.repair(rawOutput);
+    ParsedResult repairedResult = parser.parse(repaired);
+    validator.validate(repairedResult);
+    return repairedResult;
+} catch (Exception e) {
+    return fallbackResult(input);
+}</code></pre><p>fallback 不是假结果，而是保守结果：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">AI 返回格式异常，本次未写入高风险建议。
+系统基于已有简历和 JD 生成保守提示：
+1. 哪些经历可直接强调
+2. 哪些要求需要补证据
+3. 哪些内容不能硬写</code></pre><h3 id="3-Prompt-Injection-和输出处理：不能相信模型，也不能相信用户输入"><a href="#3-Prompt-Injection-和输出处理：不能相信模型，也不能相信用户输入" class="headerlink" title="3. Prompt Injection 和输出处理：不能相信模型，也不能相信用户输入"></a>3. Prompt Injection 和输出处理：不能相信模型，也不能相信用户输入</h3><p>AI 应用不是传统后端接口。Prompt 里既有系统规则，也有用户输入，还有外部文档。模型不天然区分“指令”和“数据”。</p><p>生产上至少要做：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">用户输入作为数据，不作为指令
+Prompt 明确边界
+模型输出必须 Schema 校验
+模型输出进入 HTML 前必须净化
+模型输出进入数据库前必须校验
+模型输出进入命令、SQL、配置前必须禁止或人工确认</code></pre><p>以简历/JD 场景为例，最重要的规则是：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">JD 是岗位要求，不是候选人事实。
+简历是候选人事实来源。
+没有证据的内容只能写成缺口、建议、待补充，不能写成经历。</code></pre><p>这就是“证据约束”。</p><h3 id="4-用户界面也要有护栏：别把内部错误丢给用户"><a href="#4-用户界面也要有护栏：别把内部错误丢给用户" class="headerlink" title="4. 用户界面也要有护栏：别把内部错误丢给用户"></a>4. 用户界面也要有护栏：别把内部错误丢给用户</h3><p>后端做了很多护栏，如果前端直接展示内部错误，用户体验还是很差。</p><p>错误示例：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">JSON_PARSE_FAILED
+reserve credits failed
+same AI task creating
+model output empty</code></pre><p>应该翻译成：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">AI 服务暂时没有返回可用结果，本次未消耗额度。
+当前已有相同任务正在处理中，请稍后查看结果。
+当前请求较复杂，已为你保留输入内容，可以稍后重试。</code></pre><p>用户只需要知道三件事：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">发生了什么
+有没有扣额度
+下一步能做什么</code></pre><hr><h2 id="六、第四层护栏：防止问题无法追踪"><a href="#六、第四层护栏：防止问题无法追踪" class="headerlink" title="六、第四层护栏：防止问题无法追踪"></a>六、第四层护栏：防止问题无法追踪</h2><p>第四层护栏解决的是线上排查问题：出错时，必须知道是哪次请求、哪个用户、哪个模型、哪个 Prompt 版本、哪一步失败、有没有扣点、有没有退款。</p><h3 id="1-traceId：所有日志必须能串起来"><a href="#1-traceId：所有日志必须能串起来" class="headerlink" title="1. traceId：所有日志必须能串起来"></a>1. traceId：所有日志必须能串起来</h3><p>没有 traceId 的系统，线上问题基本靠猜。</p><p>一次 AI 调用至少跨这些层：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">浏览器
+→ Nginx
+→ Backend API
+→ Async Task
+→ AI Gateway
+→ Model Provider
+→ JSON Parser
+→ DB
+→ 前端轮询</code></pre><p>必须在入口生成 traceId：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">X-Trace-Id: 01JZ... </code></pre><p>如果前端已经传了可信 traceId，可以复用；否则后端生成。</p><p>日志中至少带：</p><pre class="line-numbers language-json"><code class="language-json">{
+  "traceId": "01JZ...",
+  "userId": 123,
+  "feature": "JOB_SCORE",
+  "taskId": "2072...",
+  "sessionId": "2072...",
+  "resumeVersionId": "2072...",
+  "promptVersion": "job-score-v3",
+  "model": "glm-4-flash",
+  "status": "FAILED",
+  "errorCode": "MODEL_TIMEOUT"
+}</code></pre><p>trace 的核心定义是把一次请求拆成多个 span，并用上下文把它们关联起来。<a target="_blank" rel="noopener" href="https://opentelemetry.io/docs/concepts/signals/traces/">OpenTelemetry Traces</a><br>日志也应该带 trace 信息，方便从错误日志跳到调用链。<a target="_blank" rel="noopener" href="https://opentelemetry.io/docs/specs/otel/logs/">OpenTelemetry Logs</a></p><h3 id="2-AI-调用日志：不要只记“调用成功”"><a href="#2-AI-调用日志：不要只记“调用成功”" class="headerlink" title="2. AI 调用日志：不要只记“调用成功”"></a>2. AI 调用日志：不要只记“调用成功”</h3><p>AI 调用日志不是为了好看，而是为了回答这些问题：</p><ul><li>谁调用了？</li><li>调用了哪个功能？</li><li>输入多长？</li><li>用了哪个 Prompt 版本？</li><li>用了哪个模型？</li><li>花了多少 token？</li><li>成功还是失败？</li><li>失败原因是什么？</li><li>有没有扣点？</li><li>有没有退款？</li><li>结果是否写入数据库？</li><li>是否命中缓存？</li><li>是否触发降级？</li></ul><p>建议建一张调用日志表：</p><pre class="line-numbers language-sql"><code class="language-sql">CREATE TABLE ai_call_log (
+  id BIGINT PRIMARY KEY,
+  trace_id VARCHAR(64),
+  task_id BIGINT,
+  user_id BIGINT,
+  feature VARCHAR(64),
+  model_provider VARCHAR(64),
+  model_name VARCHAR(128),
+  prompt_version VARCHAR(64),
+  input_hash VARCHAR(128),
+  request_tokens INT,
+  response_tokens INT,
+  cached_tokens INT,
+  estimated_cost DECIMAL(10, 6),
+  status VARCHAR(32),
+  error_code VARCHAR(64),
+  latency_ms BIGINT,
+  cache_hit BOOLEAN,
+  created_at DATETIME
+);</code></pre><p>注意：<strong>不要把完整简历、JD、身份证、手机号、邮箱原文直接写进日志。</strong><br>日志应该存 hash、长度、版本、状态、错误码。真正的用户内容要有更严格的权限和保留策略。</p><h3 id="3-promptVersion：没有版本号，缓存和审计都会失真"><a href="#3-promptVersion：没有版本号，缓存和审计都会失真" class="headerlink" title="3. promptVersion：没有版本号，缓存和审计都会失真"></a>3. promptVersion：没有版本号，缓存和审计都会失真</h3><p>Prompt 是 AI 应用里的业务逻辑。改 Prompt 就等于改规则。</p><p>所以每个功能都应该有版本号：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">jd-diagnosis-v1
+jd-diagnosis-v2
+job-score-v3
+delivery-note-v4</code></pre><p>日志、缓存、任务、结果都要带 <code>promptVersion</code>。</p><p>为什么？</p><h4 id="方便回滚"><a href="#方便回滚" class="headerlink" title="方便回滚"></a>方便回滚</h4><p>如果新 Prompt 质量变差，可以快速定位：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">job-score-v4 之后投诉增加</code></pre><h4 id="避免缓存污染"><a href="#避免缓存污染" class="headerlink" title="避免缓存污染"></a>避免缓存污染</h4><p>Prompt 改了，旧缓存不能继续命中。</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">cacheKey = feature + inputHash + promptVersion</code></pre><h4 id="方便解释结果"><a href="#方便解释结果" class="headerlink" title="方便解释结果"></a>方便解释结果</h4><p>用户问：“为什么这次结果和上次不一样？”</p><p>至少能回答：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">模型版本不同 / Prompt 版本不同 / 输入版本不同</code></pre><h3 id="4-审计记录：不是为了“企业级”，是为了出事能查"><a href="#4-审计记录：不是为了“企业级”，是为了出事能查" class="headerlink" title="4. 审计记录：不是为了“企业级”，是为了出事能查"></a>4. 审计记录：不是为了“企业级”，是为了出事能查</h3><p>AI 应用的审计至少覆盖这些动作：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">用户提交 AI 请求
+模型调用开始
+模型调用结束
+结果解析
+质量门禁
+额度扣减 / 退款
+结果写入数据库
+PDF 导出
+分享链接创建
+管理员查看</code></pre><p>审计记录建议包含：</p><pre class="line-numbers language-json"><code class="language-json">{
+  "actorUserId": 123,
+  "action": "AI_JOB_SCORE_CREATE",
+  "targetType": "JOB_SESSION",
+  "targetId": "2072...",
+  "traceId": "01JZ...",
+  "ip": "masked",
+  "userAgent": "masked",
+  "result": "SUCCEEDED",
+  "createdAt": "2026-07-04T12:00:00"
+}</code></pre><p>注意两点：</p><h4 id="1-审计日志不等于业务日志"><a href="#1-审计日志不等于业务日志" class="headerlink" title="1. 审计日志不等于业务日志"></a>1. 审计日志不等于业务日志</h4><p>业务日志偏调试：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">模型耗时、错误栈、状态流</code></pre><p>审计日志偏追责：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">谁对什么资源做了什么操作，结果如何</code></pre><h4 id="2-审计日志不能存太多敏感内容"><a href="#2-审计日志不能存太多敏感内容" class="headerlink" title="2. 审计日志不能存太多敏感内容"></a>2. 审计日志不能存太多敏感内容</h4><p>不要把完整简历、JD、Prompt 原文都塞进审计日志。<br>应该存资源 ID、hash、版本号、traceId。</p><hr><h2 id="七、第五层护栏：防止高成本任务拖垮服务"><a href="#七、第五层护栏：防止高成本任务拖垮服务" class="headerlink" title="七、第五层护栏：防止高成本任务拖垮服务"></a>七、第五层护栏：防止高成本任务拖垮服务</h2><p>第五层护栏解决的是非模型资源问题。AI 应用里的高成本任务不只有模型调用，PDF、OCR、图片生成、文档解析这些任务也会吃 CPU、内存、浏览器进程和队列资源。</p><h3 id="1-PDF-任务队列：PDF-导出不是普通下载接口"><a href="#1-PDF-任务队列：PDF-导出不是普通下载接口" class="headerlink" title="1. PDF 任务队列：PDF 导出不是普通下载接口"></a>1. PDF 任务队列：PDF 导出不是普通下载接口</h3><p>如果你的产品有 PDF 导出，尤其是服务端 Puppeteer/Chromium 渲染，必须做队列。</p><p>因为 PDF 导出会吃：</p><ul><li>CPU</li><li>内存</li><li>浏览器进程</li><li>字体渲染</li><li>页面截图/分页</li><li>文件写入</li></ul><p>不能让用户直接同步打 Puppeteer。</p><p>推荐结构：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">用户点击导出
+→ 创建 pdf_task
+→ 入队
+→ worker 拉取
+→ Puppeteer 渲染
+→ 写文件
+→ 更新状态
+→ 用户轮询下载</code></pre><p>PDF 任务状态：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">queued
+rendering
+succeeded
+failed
+expired</code></pre><p>并发限制：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">PDF_TASK_QUEUE_LIMIT=8
+PUPPETEER_MAX_CONCURRENT=1
+PUPPETEER_MAX_QUEUE_SIZE=8</code></pre><p>单机小服务器建议从 1 个 Puppeteer 并发开始。不要一上来开 5 个。</p><p>还要做三层限制：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">用户级：每用户每分钟最多 N 次导出
+IP 级：每 IP 每分钟最多 N 次导出
+全局级：Puppeteer 同时最多 N 个渲染</code></pre><p>失败兜底：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">服务端 PDF 导出失败
+→ 返回 taskId + 错误摘要
+→ 前端提示用户
+→ 提供浏览器打印/导出兜底</code></pre><p>不要让用户只看到：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">服务器异常</code></pre><hr><h2 id="八、最小数据库设计参考"><a href="#八、最小数据库设计参考" class="headerlink" title="八、最小数据库设计参考"></a>八、最小数据库设计参考</h2><p>如果把上面的护栏落到数据库，一个够用的 AI 任务系统，可以从这几张表开始：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">async_task              -- AI 异步任务表，记录一次 AI/PDF 等任务的生命周期
+ai_call_log             -- AI 调用日志表，记录模型调用、耗时、token、错误码等信息
+ai_credit_ledger        -- AI 额度账本表，记录 reserve / commit / refund 等扣点流水
+ai_prompt_version       -- Prompt 版本表，记录每个功能使用的 Prompt 版本
+ai_result_snapshot      -- AI 结果快照表，保存一次任务生成后的结构化结果
+audit_log               -- 审计日志表，记录谁在什么时候对什么资源做了什么操作</code></pre><h3 id="async-task"><a href="#async-task" class="headerlink" title="async_task"></a>async_task</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">id                       -- 任务主键 ID
+user_id                  -- 发起任务的用户 ID
+feature                  -- 功能类型，例如 JD_DIAGNOSIS、JOB_SCORE、DELIVERY_NOTE、PDF_EXPORT
+idempotency_key          -- 幂等 key，用来避免同一输入重复创建任务
+status                   -- 任务状态，例如 queued、running、succeeded、failed、canceled、refunded
+progress                 -- 任务进度，例如 0 到 100，方便前端展示处理进度
+trace_id                 -- 链路追踪 ID，用来串联前端、后端、AI 调用、日志和审计记录
+error_code               -- 错误码，例如 MODEL_TIMEOUT、JSON_PARSE_FAILED、PDF_RENDER_FAILED
+error_message            -- 错误摘要，记录可排查的失败原因，不建议存敏感原文
+created_at               -- 任务创建时间
+updated_at               -- 任务最后更新时间</code></pre><h3 id="ai-call-log"><a href="#ai-call-log" class="headerlink" title="ai_call_log"></a>ai_call_log</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">id                       -- AI 调用日志主键 ID
+task_id                  -- 关联的 async_task 任务 ID
+trace_id                 -- 链路追踪 ID，用来和任务、额度账本、审计日志串联
+provider                 -- 模型供应商，例如 OpenAI、DeepSeek、智谱、通义等
+model                    -- 实际调用的模型名称
+prompt_version           -- 本次调用使用的 Prompt 版本
+input_hash               -- 输入内容 hash，用来标识相同输入，避免直接记录简历、JD 等敏感原文
+request_tokens           -- 输入 token 数
+response_tokens          -- 输出 token 数
+estimated_cost           -- 本次调用的估算成本
+status                   -- 调用状态，例如 succeeded、failed、fallback、cached
+error_code               -- 调用失败时的错误码，例如 MODEL_RATE_LIMITED、MODEL_TIMEOUT
+latency_ms               -- 模型调用耗时，单位毫秒</code></pre><h3 id="ai-credit-ledger"><a href="#ai-credit-ledger" class="headerlink" title="ai_credit_ledger"></a>ai_credit_ledger</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">id                       -- 额度流水主键 ID
+user_id                  -- 用户 ID
+task_id                  -- 关联的 async_task 任务 ID
+feature                  -- 消耗额度的功能类型
+type                     -- 流水类型，例如 RESERVE、COMMIT、REFUND
+change_amount            -- 额度变化数量，预占/扣减通常为负数，退款通常为正数
+balance_after            -- 本次流水发生后的用户额度余额
+reason                   -- 额度变化原因，例如 AI 任务成功、模型超时退款、JSON 解析失败退款
+trace_id                 -- 链路追踪 ID，用来和任务、AI 调用日志、审计日志串联</code></pre><h3 id="ai-prompt-version"><a href="#ai-prompt-version" class="headerlink" title="ai_prompt_version"></a>ai_prompt_version</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">id                       -- Prompt 版本主键 ID
+feature                  -- 功能类型，例如 JD_DIAGNOSIS、JOB_SCORE、DELIVERY_NOTE
+prompt_version           -- Prompt 版本号，例如 job-score-v3、delivery-note-v4
+model                    -- 默认绑定或推荐使用的模型
+status                   -- 版本状态，例如 active、deprecated、testing
+description              -- 版本说明，例如本次 Prompt 改动解决了什么问题
+created_at               -- 版本创建时间
+updated_at               -- 版本最后更新时间</code></pre><h3 id="ai-result-snapshot"><a href="#ai-result-snapshot" class="headerlink" title="ai_result_snapshot"></a>ai_result_snapshot</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">id                       -- 结果快照主键 ID
+task_id                  -- 关联的 async_task 任务 ID
+user_id                  -- 用户 ID
+feature                  -- 功能类型
+prompt_version           -- 生成该结果时使用的 Prompt 版本
+model                    -- 生成该结果时使用的模型
+input_hash               -- 输入内容 hash，用来标识结果对应的输入版本
+result_json              -- 结构化结果 JSON，例如评分、风险、建议、修复任务等
+status                   -- 结果状态，例如 valid、fallback、rejected
+created_at               -- 结果生成时间</code></pre><h3 id="audit-log"><a href="#audit-log" class="headerlink" title="audit_log"></a>audit_log</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">id                       -- 审计日志主键 ID
+actor_user_id            -- 操作者用户 ID，例如普通用户或管理员
+action                   -- 操作类型，例如 AI_JOB_SCORE_CREATE、PDF_EXPORT、ADMIN_VIEW_RESULT
+target_type              -- 被操作资源类型，例如 JOB_SESSION、RESUME_VERSION、AI_TASK、PDF_TASK
+target_id                -- 被操作资源 ID
+trace_id                 -- 链路追踪 ID，用来追踪这次操作关联的完整链路
+result                   -- 操作结果，例如 SUCCEEDED、FAILED、DENIED
+created_at               -- 审计记录创建时间</code></pre><p>这套表不复杂，但足够支撑上线后的定位、退款、审计和成本复盘。</p><hr><h2 id="九、上线验收：不是能跑就算完成"><a href="#九、上线验收：不是能跑就算完成" class="headerlink" title="九、上线验收：不是能跑就算完成"></a>九、上线验收：不是能跑就算完成</h2><p>AI 应用上线前，我建议至少跑这些场景：</p><h3 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">同一用户连续点击 10 次
+同一 IP 连续请求 50 次
+高成本接口并发请求</code></pre><p>验收：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">不会重复调用模型
+不会重复扣点
+用户看到明确提示</code></pre><h3 id="幂等"><a href="#幂等" class="headerlink" title="幂等"></a>幂等</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">同一简历 + 同一 JD + 同一功能重复提交</code></pre><p>验收：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">返回同一个 taskId 或接管已有任务</code></pre><h3 id="JSON-失败"><a href="#JSON-失败" class="headerlink" title="JSON 失败"></a>JSON 失败</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">模拟模型返回：
+- 半截 JSON
+- Markdown 包裹 JSON
+- 缺字段
+- enum 错误</code></pre><p>验收：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">系统降级，不崩溃，不写入危险结果</code></pre><h3 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">跑 10 次不同功能</code></pre><p>验收：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">能看到 token、模型、功能、估算成本、是否命中缓存</code></pre><h3 id="额度"><a href="#额度" class="headerlink" title="额度"></a>额度</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">成功
+失败
+超时
+质量门禁拒绝</code></pre><p>验收：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">成功才 commit
+失败 refund
+账本可解释</code></pre><h3 id="PDF"><a href="#PDF" class="headerlink" title="PDF"></a>PDF</h3><pre class="line-numbers language-plaintext"><code class="language-plaintext">并发导出
+长简历导出
+Puppeteer 超时</code></pre><p>验收：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">队列可控
+失败可查 taskId
+前端有兜底</code></pre><hr><h2 id="十、我认为-AI-应用最小生产标准是什么？"><a href="#十、我认为-AI-应用最小生产标准是什么？" class="headerlink" title="十、我认为 AI 应用最小生产标准是什么？"></a>十、我认为 AI 应用最小生产标准是什么？</h2><p>如果只能保留 10 条，我会选这些：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">1. 用户级限流
+2. IP 级限流
+3. 高成本接口单独限流
+4. AI 任务幂等
+5. traceId
+6. AI 调用日志
+7. JSON Schema 校验
+8. 失败退款
+9. token 成本记录
+10. 审计日志</code></pre><p>如果你的应用有 PDF、图片生成、OCR、RAG、Agent，再额外加：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">PDF / 图片 / OCR 队列
+外部 URL 白名单
+工具权限边界
+RAG 引用校验
+Agent 操作确认</code></pre><hr><h2 id="十一、简喵里我实际做了哪些最小护栏？"><a href="#十一、简喵里我实际做了哪些最小护栏？" class="headerlink" title="十一、简喵里我实际做了哪些最小护栏？"></a>十一、简喵里我实际做了哪些最小护栏？</h2><p>已做：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">用户级限流 / Redis 缓存 / inputHash / promptVersion / AI 调用日志 / 失败不乱扣点 / PDF 导出限制 / traceId</code></pre><p>进行中：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">更细粒度错误码 / 后台审计面板 / 成本看板 / PDF 异步队列优化</code></pre><p>后续补齐：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">OpenTelemetry trace / 更完整的模型降级策略 / 管理员审计查询 / 高成本接口全局熔断</code></pre><hr><h2 id="十二、结尾：AI-应用上线，拼的不是“接了哪个模型”"><a href="#十二、结尾：AI-应用上线，拼的不是“接了哪个模型”" class="headerlink" title="十二、结尾：AI 应用上线，拼的不是“接了哪个模型”"></a>十二、结尾：AI 应用上线，拼的不是“接了哪个模型”</h2><p>模型 API 越来越容易接。真正难的是：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">怎么限制成本
+怎么处理失败
+怎么保证输出可控
+怎么让用户信任
+怎么让出事时能追踪
+怎么让免费能力不被滥用</code></pre><p>一个能上线的 AI 应用，不应该只是：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">Prompt + API Key + 前端展示</code></pre><p>而应该至少有：</p><pre class="line-numbers language-plaintext"><code class="language-plaintext">限流
+幂等
+队列
+日志
+缓存
+降级
+审计
+成本
+权限
+兜底</code></pre><p>这些东西看起来不酷，但决定了产品能不能真的给用户用。</p><p>Demo 阶段可以靠一次成功截图。<br>生产阶段必须靠失败时也不崩的系统设计。</p><hr><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul><li><a target="_blank" rel="noopener" href="https://owasp.org/www-project-top-10-for-large-language-model-applications/">OWASP Top 10 for Large Language Model Applications</a></li><li><a target="_blank" rel="noopener" href="https://developers.openai.com/api/docs/guides/production-best-practices">OpenAI Production Best Practices</a></li><li><a target="_blank" rel="noopener" href="https://developers.openai.com/api/docs/guides/rate-limits">OpenAI Rate Limits</a></li><li><a target="_blank" rel="noopener" href="https://developers.openai.com/api/docs/guides/error-codes">OpenAI Error Codes</a></li><li><a target="_blank" rel="noopener" href="https://developers.openai.com/api/docs/guides/structured-outputs">OpenAI Structured Outputs</a></li><li><a target="_blank" rel="noopener" href="https://developers.openai.com/api/docs/guides/prompt-caching">OpenAI Prompt Caching</a></li><li><a target="_blank" rel="noopener" href="https://developers.openai.com/api/docs/pricing">OpenAI API Pricing</a></li><li><a target="_blank" rel="noopener" href="https://redis.io/tutorials/howtos/ratelimiting/">Redis Rate Limiting Patterns</a></li><li><a target="_blank" rel="noopener" href="https://opentelemetry.io/docs/concepts/signals/traces/">OpenTelemetry Traces</a></li><li><a target="_blank" rel="noopener" href="https://opentelemetry.io/docs/specs/otel/logs/">OpenTelemetry Logs</a></li></ul><p>我是 Ryan，一个专注于可信 AI 应用工程的开发者，<a href="https://yanxai.com/">我的个人技术博客</a>，相比让 AI 生成更多内容，我更关心它的回答是否有证据，过程是否可追溯，结果是否经得起验证。</p></div><hr><div class="reprint" id="reprint-statement"><div class="reprint__author"><span class="reprint-meta" style="font-weight:700"><i class="fas fa-user">文章作者: </i></span><span class="reprint-info"><a href="/about" rel="external nofollow noreferrer">Ryan</a></span></div><div class="reprint__type"><span class="reprint-meta" style="font-weight:700"><i class="fas fa-link">文章链接: </i></span><span class="reprint-info"><a href="https://yanxai.com/p/ai-production-guardrails/">https://yanxai.com/p/ai-production-guardrails/</a></span></div><div class="reprint__notice"><span class="reprint-meta" style="font-weight:700"><i class="fas fa-copyright">版权声明: </i></span><span class="reprint-info">本博客所有文章除特別声明外，均采用 <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a> 许可协议。转载请注明来源 <a href="/about" target="_blank">Ryan</a> !</span></div></div><script async defer>function navToReprintStatement(){"undefined"!=typeof $&&$("html, body").animate({scrollTop:$("#reprint-statement").offset().top-80},800)}document.addEventListener("copy",(function(t){M.toast({html:'<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>'})}))</script><div class="tag_share" style="display:block"><div class="post-meta__tag-list" style="display:inline-block"><div class="article-tag"><a href="/tags/Guardrails/"><span class="chip bg-color">Guardrails</span> </a><a href="/tags/Redis/"><span class="chip bg-color">Redis</span> </a><a href="/tags/Observability/"><span class="chip bg-color">Observability</span> </a><a href="/tags/LLM/"><span class="chip bg-color">LLM</span> </a><a href="/tags/Evals/"><span class="chip bg-color">Evals</span></a></div></div><div class="post_share" style="zoom:80%;width:fit-content;display:inline-block;float:right;margin:-.15rem 0"><link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css"><div id="article-share"><div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div><script src="/libs/share/js/social-share.min.js"></script></div></div></div></div></div><div class="post-like-wrap"><button class="post-like-btn" id="postLikeBtn" onclick="togglePostLike()"><span id="likeHeart">🤍</span> <span class="like-count" id="likeCount">0</span></button></div><script>!function(){var t="post-like-"+window.location.pathname,e="1"===localStorage.getItem(t),o=parseInt(localStorage.getItem(t+"-count"))||Math.floor(6*Math.random()+2),n=document.getElementById("postLikeBtn"),l=document.getElementById("likeHeart"),a=document.getElementById("likeCount");a.textContent=o,e&&(n.classList.add("liked"),l.textContent="❤️"),window.togglePostLike=function(){n.classList.contains("liked")?(n.classList.remove("liked"),l.textContent="🤍",o--,localStorage.setItem(t,"0")):(n.classList.add("liked"),l.textContent="❤️",o++),a.textContent=o,localStorage.setItem(t+"-count",o)}}()</script><div id="related-posts" class="related-posts card" data-aos="fade-up"><div class="card-content"><h4 class="card-title"><i class="fas fa-link"></i> 相关推荐</h4><div class="related-list"><a href="/p/rag-evidence-chain/" class="related-item"><span class="related-title">RAG 不是外挂知识库，而是一套证据链系统</span> <span class="related-date">2026-06-27</span> </a><a href="/p/rag-core-terms/" class="related-item"><span class="related-title">一文讲透 RAG 核心术语：Embedding、Chunk、Vector DB、BM25、Reranker 到底是什么</span> <span class="related-date">2026-06-28</span> </a><a href="/p/ai-coding-trustworthy-delivery/" class="related-item"><span class="related-title">小白用 Codex 和 Claude Code 也能做产品，程序员的出路在哪里？</span> <span class="related-date">2026-06-27</span> </a><a href="/p/public-server-ssh-security/" class="related-item"><span class="related-title">我的服务器被暴力破解 10 万次后，我才真正理解公网安全</span> <span class="related-date">2026-07-07</span> </a><a href="/p/ai-app-deployment-domain/" class="related-item"><span class="related-title">AI应用项目部署上线和域名绑定保姆级流程：SpringBoot+Vue+AI+Nginx+Docker+Docker</span> <span class="related-date">2026-07-05</span></a></div></div></div><div class="giscus-card card" data-aos="fade-up"><div class="card-content"><h4 class="card-title"><i class="fas fa-comments"></i> 评论</h4><p style="color:#888;font-size:.95rem;margin-bottom:16px">有问题欢迎留言，看到都会回～</p><div class="giscus"></div></div></div><script>!function(){function t(){var t=document.createElement("script");t.src="https://giscus.app/client.js",t.setAttribute("data-repo","RyanCoreAI/RyanCoreAI.github.io"),t.setAttribute("data-repo-id","R_kgDOSWvrnQ"),t.setAttribute("data-category","Announcements"),t.setAttribute("data-category-id","DIC_kwDOSWvrnc4C8qOd"),t.setAttribute("data-mapping","pathname"),t.setAttribute("data-strict","0"),t.setAttribute("data-reactions-enabled","1"),t.setAttribute("data-emit-metadata","0"),t.setAttribute("data-input-position","bottom"),t.setAttribute("data-theme","preferred_color_scheme"),t.setAttribute("data-lang","zh-CN"),t.setAttribute("data-loading","lazy"),t.crossOrigin="anonymous",t.async=!0,document.body.appendChild(t)}window.requestIdleCallback?requestIdleCallback(t,{timeout:4e3}):setTimeout(t,3e3)}()</script><article id="prenext-posts" class="prev-next articles"><div class="row article-row"><div class="article col s12 m6" data-aos="fade-up"><div class="article-badge left-badge text-color"><i class="fas fa-chevron-left"></i>&nbsp;上一篇</div><div class="card"><a href="/p/ai-app-deployment-domain/"><div class="card-image"><img src="/medias/featureimages/3.webp" class="responsive-img" alt="AI应用项目部署上线和域名绑定保姆级流程：SpringBoot+Vue+AI+Nginx+Docker+Docker"> <span class="card-title">AI应用项目部署上线和域名绑定保姆级流程：SpringBoot+Vue+AI+Nginx+Docker+Docker</span></div></a><div class="card-content article-content"><div class="summary block-with-text">以简喵为例，记录打包、Docker Compose、域名绑定、Nginx 与 Cloudflare 配置，以及上线验证和备份。</div><div class="publish-info"><span class="publish-date"><i class="far fa-clock fa-fw icon-date"></i>2026-07-05</span></div></div></div></div><div class="article col s12 m6" data-aos="fade-up"><div class="article-badge right-badge text-color">下一篇&nbsp;<i class="fas fa-chevron-right"></i></div><div class="card"><a href="/p/public-server-ssh-security/"><div class="card-image"><img src="/medias/featureimages/6.webp" class="responsive-img" alt="我的服务器被暴力破解 10 万次后，我才真正理解公网安全"> <span class="card-title">我的服务器被暴力破解 10 万次后，我才真正理解公网安全</span></div></a><div class="card-content article-content"><div class="summary block-with-text">从 SSH 认证日志、端口暴露和部署边界出发，复盘个人项目上线后的公网安全认识。</div><div class="publish-info"><span class="publish-date"><i class="far fa-clock fa-fw icon-date"></i>2026-07-07</span></div></div></div></div></div></article></div><script>!function e(){"undefined"!=typeof $?$("#articleContent").on("copy",(function(e){if(void 0!==window.getSelection){var n=window.getSelection();if(!((""+n).length<Number.parseInt("120"))){var t=document.getElementsByTagName("body")[0],o=document.createElement("div");o.style.position="absolute",o.style.left="-99999px",t.appendChild(o),o.appendChild(n.getRangeAt(0).cloneContents()),"PRE"!==n.getRangeAt(0).commonAncestorContainer.nodeName&&"CODE"!==n.getRangeAt(0).commonAncestorContainer.nodeName||(o.innerHTML="<pre>"+o.innerHTML+"</pre>");var i=document.location.href;o.innerHTML+='<br />来源: RyanCoreAI<br />文章作者: Ryan<br />文章链接: <a href="'+i+'">'+i+"</a><br />本文章著作权归作者所有，任何形式的转载都请注明出处。",n.selectAllChildren(o),window.setTimeout((function(){t.removeChild(o)}),200)}}})):setTimeout(e,100)}()</script><script>!function e(){if("undefined"!=typeof $){$("pre").wrap('<div class="code-area" style="position: relative"></div>');var t=$('<div class="code_lang" title="代码语言"></div>');$("pre").before(t),$("pre").each((function(){var e=$(this).attr("class");if(e){var t=e.replace("line-numbers","").trim().replace("language-","").trim();$(this).siblings(".code_lang").text(t)}}));var a=$('<i class="fas fa-copy code_copy" title="复制代码" aria-hidden="true"></i>'),o=$('<div class="codecopy_notice"></div>');$(".code-area").prepend(a),$(".code-area").prepend(o);var i={};$(".code-area .fa-copy").on("click",(function(){var e=window.getSelection(),t=document.createRange();t.selectNodeContents($(this).siblings("pre").find("code")[0]),e.removeAllRanges(),e.addRange(t);e.toString();!function(e,t){var a=$(t).closest(".code-area"),o=a.index(".code-area"),c=a.find(".codecopy_notice");if(i[o]&&(clearTimeout(i[o]),c.stop(!0,!0)),document.queryCommandSupported&&document.queryCommandSupported("copy"))try{document.execCommand("copy"),c.text("复制成功").css({opacity:1,top:30}),i[o]=setTimeout((function(){c.animate({opacity:0,top:0},650)}),600)}catch(e){c.text("复制失败").css({opacity:1,top:30}),i[o]=setTimeout((function(){c.animate({opacity:0,top:0},650)}),600)}else c.text("浏览器不支持复制")}(0,this),e.removeAllRanges()}));var c=$('<i class="fas fa-angle-up code-expand" aria-hidden="true"></i>');$(".code-area").prepend(c),$(".code-expand").on("click",(function(){$(this).parent().hasClass("code-closed")?($(this).siblings("pre").find("code").show(),$(this).parent().removeClass("code-closed")):($(this).siblings("pre").find("code").hide(),$(this).parent().addClass("code-closed"))}))}else setTimeout(e,100)}()</script></div><div id="toc-aside" class="expanded col l3 hide-on-med-and-down post-doc-toc"><div class="toc-widget card"><div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;大纲</div><div id="toc-content"></div></div></div></div><div id="floating-toc-btn" class="hide-on-med-and-down"><a class="btn-floating btn-large bg-color"><i class="fas fa-list-ul"></i></a></div><div id="mobile-toc-btn" class="hide-on-large-only"><a class="btn-floating btn-large bg-color"><i class="fas fa-list-ul"></i></a></div><div id="mobile-toc-backdrop" class="hide"></div><div id="mobile-toc-panel" class="hide"><div class="mobile-toc-header"><span class="mobile-toc-title"><i class="fas fa-list-ul"></i>&nbsp;目录</span><div style="display:flex;align-items:center;gap:8px"><a class="mobile-toc-expand" title="展开/收起"><i class="fas fa-chevron-up"></i></a> <a class="mobile-toc-close"><i class="fas fa-times"></i></a></div></div><div id="mobile-toc-content"></div></div><script defer src="/libs/tocbot/tocbot.min.js"></script><script>!function o(){if("undefined"==typeof $||"undefined"==typeof tocbot)return void setTimeout(o,100);tocbot.init({tocSelector:"#toc-content",contentSelector:"#articleContent",headingsOffset:-(.4*$(window).height()-45),collapseDepth:Number("0"),headingSelector:"h2, h3, h4"});let e=parseInt(.4*$(window).height()-64),t=$(".toc-widget");$(window).scroll((function(){$(window).scrollTop()>e?t.addClass("toc-fixed"):t.removeClass("toc-fixed")}));let n=$("#toc-aside"),i=$("#main-content");$("#floating-toc-btn .btn-floating").click((function(){n.hasClass("expanded")?(n.removeClass("expanded").hide(),i.removeClass("l9")):(n.addClass("expanded").show(),i.addClass("l9")),function(o,e){let t=$("#"+o);if(0===t.length)return;let n=t.width();n+=n>=450?21:n>=350&&n<450?18:n>=300&&n<350?16:14,$("#"+e).width(n)}("artDetail","prenext-posts")}));var s,a=$("#mobile-toc-backdrop"),l=$("#mobile-toc-panel"),c=$("#mobile-toc-content"),d=!1;function r(){a.removeClass("show").addClass("hide"),l.removeClass("show").addClass("hide"),$("body").css("overflow","")}$(".mobile-toc-expand").click((function(o){o.stopPropagation(),(d=!d)?(l.css("max-height","92vh"),$(this).find("i").removeClass("fa-chevron-up").addClass("fa-chevron-down")):(l.css("max-height","65vh"),$(this).find("i").removeClass("fa-chevron-down").addClass("fa-chevron-up"))})),$("#mobile-toc-btn .btn-floating").click((function(){c.html($("#toc-content").html());var o=$("#toc-content .is-active-link");if(o.length){var e=$("#toc-content .toc-link").index(o);setTimeout((function(){var o=c.find(".toc-link").eq(e);o.addClass("is-active-link");var t=c.height(),n=o.position().top;c.scrollTop(n-t/2+o.height()/2)}),100)}d=!1,l.css("max-height","65vh"),l.find(".mobile-toc-expand i").removeClass("fa-chevron-down").addClass("fa-chevron-up"),a.removeClass("hide").addClass("show"),l.removeClass("hide").addClass("show"),$("body").css("overflow","hidden")})),a.click(r),$(".mobile-toc-close").click(r),c.length&&(c.on("click",".toc-link",(function(o){o.preventDefault();var e=$(this).attr("href");if(e&&"#"!==e){var t=$(e);if(t.length){var n=t.offset().top-60;$("html, body").animate({scrollTop:n},200)}}r()})),$(window).scroll((function(){clearTimeout(s),s=setTimeout((function(){if(l.hasClass("show")){var o=$(window).scrollTop()+100;$("#articleContent").find("h2, h3, h4").each((function(){var e=$(this),t=e.attr("id");t&&(e.offset().top<=o&&(c.find(".toc-link").removeClass("is-active-link"),c.find('.toc-link[href="#'+t+'"]').addClass("is-active-link")))}))}}),100)}))),function(){var o="post-scroll-"+window.location.pathname,e=sessionStorage.getItem(o);if(e){var t=parseInt(e,10);t>50&&$(window).scrollTop(t),sessionStorage.removeItem(o)}$(window).on("beforeunload",(function(){sessionStorage.setItem(o,$(window).scrollTop())})),document.addEventListener("visibilitychange",(function(){document.hidden&&sessionStorage.setItem(o,$(window).scrollTop())}))}()}()</script></div></main><footer class="page-footer bg-color"><div class="container row center-align" style="margin-bottom:15px!important"><div class="col s12 m8 l8 copy-right">Copyright&nbsp;&copy; <span id="year">2025-2026</span> <a href="/about" target="_blank">Ryan</a> |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a> |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a><br>&nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span class="white-color">100.5k</span> <span id="busuanzi_container_site_pv" style="display:none">&nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp; <span id="busuanzi_value_site_pv" class="white-color"></span> </span><span id="busuanzi_container_site_uv" style="display:none">&nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp; <span id="busuanzi_value_site_uv" class="white-color"></span></span><br><span id="sitetime">Loading ...</span><script>var calcSiteTime=function(){var e=new Date,t=e.getFullYear(),n=e.getMonth()+1,i=e.getDate(),a=e.getHours(),r=e.getMinutes(),s=e.getSeconds(),o=Date.UTC("2025","5","7","0","0","0"),g=Date.UTC(t,n,i,a,r,s)-o,d=Math.floor(g/31536e6),m=Math.floor(g/864e5-365*d);if("2025"===String(t)){document.getElementById("year").innerHTML=t;var l="This site has been running for "+m+" days";l="本站已运行 "+m+" 天",document.getElementById("sitetime").innerHTML=l}else{document.getElementById("year").innerHTML="2025 - "+t;var c="This site has been running for "+d+" years and "+m+" days";c="本站已运行 "+d+" 年 "+m+" 天",document.getElementById("sitetime").innerHTML=c}};calcSiteTime()</script><br></div><div class="col s12 m4 l4 social-link social-statis"><a href="https://github.com/RyanCoreAI" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50" data-umami-event="github_click" data-umami-event-source="social_link"><i class="fab fa-github"></i> </a><a href="#" class="tooltipped" data-tooltip="邮件联系我" data-position="top" data-delay="50" data-umami-event="email_click" data-umami-event-source="social_link" onclick='var u="ryan",d="yanxai.com";this.href="mailto:"+u+"@"+d'><i class="fas fa-envelope-open"></i> </a><a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50"><i class="fas fa-rss"></i></a></div></div></footer><div class="progress-bar"></div><div id="searchModal" class="modal"><div class="modal-content"><div class="search-header"><span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span> <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字" class="search-input"></div><div id="searchResult"></div></div></div><script>!function e(){if("undefined"!=typeof $){!function(e,t,n){"use strict";$.ajax({url:e,dataType:"xml",success:function(e){var r=$("entry",e).map((function(){return{title:$("title",this).text(),content:$("content",this).text(),url:$("url",this).text()}})).get(),i=document.getElementById(t),s=document.getElementById(n);i.addEventListener("input",(function(){var e='<ul class="search-result-list">',t=this.value.trim().toLowerCase().split(/[\s\-]+/);s.innerHTML="",this.value.trim().length<=0||(r.forEach((function(n){var r=!0,i=n.title.trim().toLowerCase(),s=n.content.trim().replace(/<[^>]+>/g,"").toLowerCase(),a=n.url;a=0===a.indexOf("/")?n.url:"/"+a;var l=-1,c=-1,u=-1;if(""!==i&&""!==s&&t.forEach((function(e,t){l=i.indexOf(e),c=s.indexOf(e),l<0&&c<0?r=!1:(c<0&&(c=0),0===t&&(u=c))})),r){e+="<li><a href='"+a+"' class='search-result-title'>"+i+"</a>";var o=n.content.trim().replace(/<[^>]+>/g,"");if(u>=0){var f=u-20,h=u+80;f<0&&(f=0),0===f&&(h=100),h>o.length&&(h=o.length);var m=o.substr(f,h);t.forEach((function(e){var t=new RegExp(e,"gi");m=m.replace(t,'<em class="search-keyword">'+e+"</em>")})),e+='<p class="search-result">'+m+"...</p>"}e+="</li>"}})),e+="</ul>",s.innerHTML=e)}))}})}("/search.xml","searchInput","searchResult")}else setTimeout(e,100)}()</script><div class="stars-con"><div id="stars"></div><div id="stars2"></div><div id="stars3"></div></div><script>function switchNightMode(){$('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($("body")),setTimeout((function(){$("body").hasClass("DarkMode")?($("body").removeClass("DarkMode"),localStorage.setItem("isDark","0"),$("#sum-moon-icon").removeClass("fa-sun").addClass("fa-moon")):($("body").addClass("DarkMode"),localStorage.setItem("isDark","1"),$("#sum-moon-icon").addClass("fa-sun").removeClass("fa-moon")),setTimeout((function(){$(".Cuteen_DarkSky").fadeOut(1e3,(function(){$(this).remove()}))}),2e3)}))}</script><div id="backTop" class="top-scroll"><a class="btn-floating btn-large waves-effect waves-light" href="#!"><i class="fas fa-arrow-up"></i></a></div><script defer src="/libs/jquery/jquery-3.6.0.min.js"></script><script defer src="/libs/materialize/materialize.min.js"></script><script defer src="/libs/masonry/masonry.pkgd.min.js"></script><script defer src="/libs/aos/aos.js"></script><script defer src="/libs/scrollprogress/scrollProgress.min.js"></script><script defer src="/libs/lightGallery/js/lightgallery-all.min.js"></script><script defer src="/js/matery.js"></script><script async src="/libs/others/busuanzi.pure.mini.js"></script><script>setTimeout((function(){var e=document.getElementById("busuanzi_value_site_pv"),t=document.getElementById("busuanzi_value_site_uv");e&&!e.textContent&&(document.getElementById("busuanzi_container_site_pv").style.display="none"),t&&!t.textContent&&(document.getElementById("busuanzi_container_site_uv").style.display="none")}),8e3)</script><script src="/libs/instantpage/instantpage.js" defer></script><script>window.addEventListener("click",(function(i){var t=i.target;if(t&&t.closest){var n=t.closest("a[href]");if(n&&window.umami&&"function"==typeof window.umami.track&&!n.hasAttribute("data-umami-event")){var e=n.getAttribute("href")||"",a=window.location.pathname;-1!==e.indexOf("github.com/")?window.umami.track(0===a.indexOf("/p/")?"article_to_github_click":"github_click"):-1!==e.indexOf("npmjs.com")||-1!==e.indexOf("registry.npmjs.org")?window.umami.track("npm_click"):0===e.indexOf("mailto:")?window.umami.track("email_click"):0===e.indexOf("/projects")&&0===a.indexOf("/p/")&&window.umami.track("article_to_project_click")}var c=t.closest(".code_copy");if(c&&window.umami&&"function"==typeof window.umami.track){var o=c.closest(".code-area")||c.parentElement,m=o&&o.textContent||"";-1===m.indexOf("npx patchbrake")&&-1===m.indexOf("npx token-studio")&&-1===m.indexOf("npm install")||window.umami.track("copy_install_command")}}}))</script>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z\d\-\.\+]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(t.test(e.href)||r.test(e.href))&&(e.href=a.dataset.original)})});</script><script>(r=>{r.imageLazyLoadSetting.processImages=t;var a=r.imageLazyLoadSetting.isSPA,o=r.imageLazyLoadSetting.preloadRatio||1,d=i();function i(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(t){(a||t)&&(d=i());for(var e,n=0;n<d.length;n++)0<=(e=(e=d[n]).getBoundingClientRect()).bottom&&0<=e.left&&e.top<=(r.innerHeight*o||document.documentElement.clientHeight*o)&&(()=>{var t,e,a,o,i=d[n];e=function(){d=d.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).dataset.loaded||(t.hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(a=new Image,o=t.getAttribute("data-original"),a.onload=function(){t.src=o,t.removeAttribute("data-original"),t.setAttribute("data-loaded",!0),e&&e()},a.onerror=function(){t.removeAttribute("data-original"),t.setAttribute("data-loaded",!1),t.src=o},t.src!==o&&(a.src=o)))})()}function e(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",e),r.addEventListener("resize",e),r.addEventListener("orientationchange",e)})(this);</script></body></html>
