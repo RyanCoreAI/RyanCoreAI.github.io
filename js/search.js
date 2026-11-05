@@ -1,1 +1,71 @@
-function escapeRegExp(e){return e.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}function escapeHTML(e){return e.replace(/[&<>"']/g,function(e){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[e]})}var searchFunc=function(e,n,a){$.ajax({url:e,dataType:"xml",success:function(e){var t=$("entry",e).map(function(){return{title:$("title",this).text(),content:$("content",this).text(),url:$("url",this).text()}}).get(),e=document.getElementById(n),r=document.getElementById(a);e.addEventListener("input",function(){var u,o='<ul class="search-result-list">',p=this.value.trim().toLowerCase().split(/[\s\-]+/);r.innerHTML="",this.value.trim().length<=0||(u=1,t.forEach(function(e){var r,n,a=!0,c=e.title.trim().toLowerCase(),s=e.content.trim().replace(/<[^>]+>/g,"").toLowerCase(),t=e.url,i=-1,l=-1;""!=c&&""!=s&&p.forEach(function(e,t){r=c.indexOf(e),i=s.indexOf(e),r<0&&i<0?a=!1:(i<0&&(i=0),0==t&&(l=i))}),a&&(o+="<li><a href='"+t+"' class='search-result-title'>"+String(u)+". "+escapeHTML(c)+"</a>",u+=1,t=e.content.trim().replace(/<[^>]+>/g,""),0<=l&&(e=l-20,n=escapeHTML(t.substr(e=e<0?0:e,100)),p.forEach(function(e){var e=escapeHTML(e),t=new RegExp(escapeRegExp(e),"gi");n=n.replace(t,'<em class="search-keyword">'+e+"</em>")}),o+='<p class="search-result">'+n+"...</p>"),o+="</li>")}),o+="</ul>",o='<p class="search-result-summary">共找到'+String(u-1)+"条结果</p>"+o,r.innerHTML=o)})}})};
+/* Shared local search for generated pages. Queries and index content are text. */
+var searchFunc = function (indexPath, inputId, resultId) {
+  function textOf(value) { return String(value || "").replace(/<[^>]+>/g, ""); }
+  function appendHighlighted(parent, text, keywords) {
+    var lower = text.toLowerCase(), offset = 0;
+    while (offset < text.length) {
+      var next = -1, length = 0;
+      keywords.forEach(function (keyword) {
+        var index = lower.indexOf(keyword, offset);
+        if (index >= 0 && (next < 0 || index < next || (index === next && keyword.length > length))) {
+          next = index; length = keyword.length;
+        }
+      });
+      if (next < 0) { parent.appendChild(document.createTextNode(text.slice(offset))); break; }
+      parent.appendChild(document.createTextNode(text.slice(offset, next)));
+      var emphasis = document.createElement("em");
+      emphasis.className = "search-keyword";
+      emphasis.textContent = text.slice(next, next + length);
+      parent.appendChild(emphasis);
+      offset = next + length;
+    }
+  }
+  $.ajax({url: indexPath, dataType: "xml", success: function (xml) {
+    var records = $("entry", xml).map(function () {
+      return { title: $("title", this).text(), content: $("content", this).text(), url: $("url", this).text() };
+    }).get();
+    var input = document.getElementById(inputId), output = document.getElementById(resultId);
+    if (!input || !output || input.dataset.searchBound) return;
+    input.dataset.searchBound = "true";
+    input.addEventListener("input", function () {
+      output.textContent = "";
+      var query = input.value.trim().toLowerCase().slice(0, 200);
+      if (!query) return;
+      var keywords = query.split(/[\s\-]+/).filter(Boolean).slice(0, 10);
+      if (!keywords.length) return;
+      var list = document.createElement("ul"), count = 0;
+      list.className = "search-result-list";
+      records.forEach(function (record) {
+        if (count >= 50) return;
+        var title = String(record.title || ""), content = textOf(record.content);
+        var lowerTitle = title.toLowerCase(), lowerContent = content.toLowerCase();
+        if (!keywords.every(function (word) { return lowerTitle.includes(word) || lowerContent.includes(word); })) return;
+        var destination;
+        try {
+          destination = new URL(record.url, window.location.href);
+          if (destination.origin !== window.location.origin || !/^https?:$/.test(destination.protocol)) return;
+        } catch (_) { return; }
+        var item = document.createElement("li"), link = document.createElement("a");
+        link.className = "search-result-title";
+        link.style.overflowWrap = "anywhere";
+        link.href = destination.href;
+        link.textContent = title;
+        item.appendChild(link);
+        var snippet = document.createElement("p");
+        snippet.className = "search-result";
+        snippet.style.overflowWrap = "anywhere";
+        var first = lowerContent.indexOf(keywords[0]), start = Math.max(0, first - 20);
+        appendHighlighted(snippet, content.slice(start, start + 100), keywords);
+        snippet.appendChild(document.createTextNode("..."));
+        item.appendChild(snippet);
+        list.appendChild(item);
+        count++;
+      });
+      var summary = document.createElement("p");
+      summary.className = "search-result-summary";
+      summary.textContent = "共找到 " + count + " 条结果";
+      output.appendChild(summary);
+      output.appendChild(list);
+    });
+  }});
+};
