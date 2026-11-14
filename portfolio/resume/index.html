@@ -73,7 +73,7 @@
     <!-- rss -->
     
     
-      <link rel="alternate" href="/portfolio/true" title="Ryan Guo" type="application/atom+xml" />
+      <link rel="alternate" href="/portfolio/atom.xml" title="Ryan Guo" type="application/atom+xml" />
     
 	<!-- mathjax -->
 	
@@ -157,9 +157,6 @@
 <li><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/RyanCoreAI">github.com&#x2F;RyanCoreAI</a> — Open-source contributions and projects</li>
 <li>Continuous learner: first-principles approach, English-first documentation, AI-accelerated workflow</li>
 </ul>
-<blockquote>
-<p>📄 <a href="/assets/ryan-guo-resume.pdf">Download Resume (PDF)</a></p>
-</blockquote>
 
         
   </div>
@@ -244,6 +241,8 @@
       var utterances_theme = 'preferred-color-scheme';
 
       (function(){
+          var container = document.getElementById('utterances_thread');
+          if (!container) return;
           var script = document.createElement('script');
 
           script.src = 'https://utteranc.es/client.js';
@@ -253,7 +252,7 @@
           script.setAttribute('theme', utterances_theme);
           script.setAttribute('crossorigin', 'anonymous');
           script.async = true;
-          (document.getElementById('utterances_thread')).appendChild(script);
+          container.appendChild(script);
       }());
   </script>
 

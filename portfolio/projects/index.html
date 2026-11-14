@@ -73,7 +73,7 @@
     <!-- rss -->
     
     
-      <link rel="alternate" href="/portfolio/true" title="Ryan Guo" type="application/atom+xml" />
+      <link rel="alternate" href="/portfolio/atom.xml" title="Ryan Guo" type="application/atom+xml" />
     
 	<!-- mathjax -->
 	
@@ -267,6 +267,8 @@
       var utterances_theme = 'preferred-color-scheme';
 
       (function(){
+          var container = document.getElementById('utterances_thread');
+          if (!container) return;
           var script = document.createElement('script');
 
           script.src = 'https://utteranc.es/client.js';
@@ -276,7 +278,7 @@
           script.setAttribute('theme', utterances_theme);
           script.setAttribute('crossorigin', 'anonymous');
           script.async = true;
-          (document.getElementById('utterances_thread')).appendChild(script);
+          container.appendChild(script);
       }());
   </script>
 
